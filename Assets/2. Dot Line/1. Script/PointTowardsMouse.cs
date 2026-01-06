@@ -16,7 +16,7 @@ public class PointTowardsMouse : MonoBehaviour
     private void PointAtMouse()
     {
         Vector3 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        Vector3 direction = mousePos - transform.position;
+        Vector2 direction = mousePos - transform.position;
         float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
 
         if (angle < MinAngle)
