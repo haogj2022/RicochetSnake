@@ -4,21 +4,28 @@ using UnityEngine;
 public class DragToAim : MonoBehaviour
 {
     [SerializeField] private LineRenderer DotLinePrefab;
-    [SerializeField] private Transform DotLineContainer;
+    [SerializeField] private GameObject DotLineContainer;
     [SerializeField] private int DotLineCount = 1;
+    private float MinAngle = 10f;
+    private float MaxAngle = 170f;
+    private float CurrentAngle;
     private Vector2 StartPoint;
     private Vector2 EndPoint;
     private Vector2 Direction;
     private float MaxDistance = 100f;
     private List<LineRenderer> DotLines = new();
+    private bool CanDrag = true;
 
     private void Start()
     {
+        GameManager.Instance.OnMoveComplete += OnMoveComplete;
+        GameManager.Instance.OnGameOver += OnGameOver;
+
         for (int i = 0; i < DotLineCount; i++)
         {
             LineRenderer newDotLine = PoolingSystem.Spawn<LineRenderer>(
                 DotLinePrefab.gameObject,
-                DotLineContainer,
+                DotLineContainer.transform,
                 DotLinePrefab.transform.localScale,
                 Vector2.zero,
                 Quaternion.identity);
@@ -26,12 +33,38 @@ public class DragToAim : MonoBehaviour
         }
     }
 
+    private void OnDestroy()
+    {
+        GameManager.Instance.OnMoveComplete -= OnMoveComplete;
+        GameManager.Instance.OnGameOver -= OnGameOver;
+    }
+
+    private void OnMoveComplete()
+    {
+        CanDrag = true;
+    }
+
+    private void OnGameOver()
+    {
+        CanDrag = false;
+    }
+
     private void Update()
     {
-        if (Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0) && CanDrag)
         {
             StartAiming();
-            ShowDotLine();
+
+            if (CurrentAngle > MinAngle && CurrentAngle < MaxAngle)
+            {
+                ShowDotLine();
+            }
+        }
+
+        if (Input.GetMouseButtonUp(0) && CanDrag)
+        {
+            DotLineContainer.SetActive(false);
+            CanDrag = false;
         }
     }
 
@@ -40,12 +73,18 @@ public class DragToAim : MonoBehaviour
         StartPoint = transform.position;
         EndPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         Direction = StartPoint - EndPoint;
-        float angle = Mathf.Atan2(Direction.y, Direction.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
+        CurrentAngle = Mathf.Atan2(Direction.y, Direction.x) * Mathf.Rad2Deg;
+
+        if (CurrentAngle > MinAngle && CurrentAngle < MaxAngle)
+        {
+            transform.rotation = Quaternion.Euler(0, 0, CurrentAngle);
+        }
     }
 
     private void ShowDotLine()
     {
+        DotLineContainer.SetActive(true);
+
         for (int i = 0; i < DotLines.Count; i++)
         {
             Vector2 newPos = StartPoint;
