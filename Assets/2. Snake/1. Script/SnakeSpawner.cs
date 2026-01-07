@@ -5,6 +5,7 @@ public class SnakeSpawner : MonoBehaviour
     [SerializeField] private GameObject PreviewSnake;
     [SerializeField] private Snake SnakeHeadPrefab;
     private bool CanSpawn = true;
+    private Snake SnakeHead;
 
     private void Update()
     {
@@ -18,14 +19,14 @@ public class SnakeSpawner : MonoBehaviour
     {
         if (CanSpawn)
         {
-            Snake snakeHead = PoolingSystem.Spawn<Snake>(
+            SnakeHead = PoolingSystem.Spawn<Snake>(
                 SnakeHeadPrefab.gameObject,
                 transform,
                 SnakeHeadPrefab.transform.localScale,
                 Vector2.zero,
                 PreviewSnake.transform.rotation);
 
-            snakeHead.MoveTowardsDirection(PreviewSnake.transform.right);
+            SnakeHead.MoveTowardsDirection(PreviewSnake.transform.right);
             PreviewSnake.SetActive(false);
             CanSpawn = false;
         }
