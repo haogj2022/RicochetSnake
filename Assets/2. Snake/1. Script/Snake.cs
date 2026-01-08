@@ -2,47 +2,52 @@ using UnityEngine;
 
 public class Snake : MonoBehaviour
 {
-    [SerializeField] private Rigidbody2D SnakeHead;
-    [SerializeField] private float MoveSpeed = 5f;
+    [SerializeField] private float MoveSpeed = 10f;
     private Vector2 MoveDirection;
+    private Obstacle[] Obstacles;
+    private float BodyRadius;
+
+    private void Start()
+    {
+        GameManager.Instance.OnGameOver += OnGameOver;
+        Obstacles = FindObjectsOfType<Obstacle>();
+        BodyRadius = Mathf.Max(transform.localScale.x, transform.localScale.y) / 2;
+    }
+
+    private void OnDestroy()
+    {
+        GameManager.Instance.OnGameOver -= OnGameOver;
+    }
+
+    private void OnGameOver()
+    {
+        MoveDirection = Vector2.zero;
+    }
 
     public void MoveTowardsDirection(Vector2 direction)
     {
         MoveDirection = direction.normalized;
-        SnakeHead.velocity = MoveDirection * MoveSpeed;
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void Update()
     {
-        if (collision.collider.CompareTag("Obstacle"))
+        if (MoveDirection != Vector2.zero)
         {
-            BounceOff(collision);
-            GameManager.Instance.DecreaseBounceCount(1);
+            transform.Translate(MoveSpeed * Time.deltaTime * MoveDirection);
         }
 
-        if (collision.collider.CompareTag("Stop"))
-        {
-            SnakeHead.velocity = Vector2.zero;
-            GameManager.Instance.OnMoveComplete();
-        }
+        CheckCollision();
     }
 
-    private void BounceOff(Collision2D collision)
+    private void CheckCollision()
     {
-        ContactPoint2D contact = collision.GetContact(0);
-        MoveDirection = Vector2.Reflect(MoveDirection, contact.normal).normalized;
-
-        SnakeHead.velocity = MoveDirection * MoveSpeed;
-
-        float angle = Mathf.Atan2(MoveDirection.y, MoveDirection.x) * Mathf.Rad2Deg;
-        transform.rotation = Quaternion.Euler(0, 0, angle);
-    }
-
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Food"))
+        for (int i = 0; i < Obstacles.Length; i++)
         {
-            collision.gameObject.SetActive(false);
+            if (Obstacles[i].CalculatedDistance(transform.position, BodyRadius) <= 0)
+            {
+                Debug.Log("Collided with " + Obstacles[i].name);
+                MoveDirection = Vector2.zero;
+            }
         }
     }
 }

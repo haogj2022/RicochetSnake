@@ -5,7 +5,7 @@ public class DragToAim : MonoBehaviour
 {
     [SerializeField] private LineRenderer DotLinePrefab;
     [SerializeField] private GameObject DotLineContainer;
-    [SerializeField] private int DotLineCount = 1;
+    [SerializeField] private int DotLineCount = 2;
     private float MinAngle = 10f;
     private float MaxAngle = 170f;
     private float CurrentAngle;
