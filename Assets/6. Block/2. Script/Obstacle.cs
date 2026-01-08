@@ -2,25 +2,50 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    private float Width, Height;
+    private float Width, Height, Left, Right, Up, Down;
 
     private void Start()
     {
         Width = transform.localScale.x;
         Height = transform.localScale.y;
+        Left = transform.position.x - (Width / 2);
+        Right = transform.position.x + (Width / 2);
+        Up = transform.position.y + (Height / 2);
+        Down = transform.position.y - (Height / 2);
     }
 
-    public float CalculatedDistance(Vector3 playerPos, float playerRadius)
+    public bool IsCollidedWith(Vector3 position, float radius, Vector3 direction)
     {
-        Vector3 distance = playerPos - transform.position;
+        if (position.x >= Left - radius && position.x <= Right + radius &&
+            position.y <= Up + radius && position.y >= Down - radius)
+        {
+            return true;
+        }
+        return false;
+    }
 
-        float clampedX = Mathf.Clamp(distance.x, -(Width / 2), Width / 2);
-        float clampedY = Mathf.Clamp(distance.y, -(Height / 2), Height / 2);
-        Vector3 closetPoint = transform.position + new Vector3(clampedX, clampedY, 0);
+    public Vector3 HitNormal(Vector3 position, float radius)
+    {
+        if (position.x >= Left - radius)
+        {
+            return Vector3.left;
+        }
 
-        float distanceToClosetPoint = Vector3.Distance(playerPos, closetPoint);
-        float actualDistance = distanceToClosetPoint - playerRadius;
+        if (position.x <= Right + radius)
+        {
+            return Vector3.right;
+        }
 
-        return Mathf.Max(0, actualDistance);
+        if (position.y <= Up + radius)
+        {
+            return Vector3.up;
+        }
+
+        if (position.y >= Down - radius)
+        {
+            return Vector3.down;
+        }
+
+        return Vector3.zero;
     }
 }

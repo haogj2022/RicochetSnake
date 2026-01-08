@@ -38,7 +38,7 @@ public class SnakeShooter : MonoBehaviour
 
     private void MoveSnake()
     {
-        SnakeHead.MoveTowardsDirection(Vector3.right);
+        SnakeHead.MoveTowardsDirection(transform.right);
         CanShoot = false;
     }
 }

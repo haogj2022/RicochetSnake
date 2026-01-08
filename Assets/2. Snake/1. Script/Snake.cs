@@ -3,7 +3,7 @@ using UnityEngine;
 public class Snake : MonoBehaviour
 {
     [SerializeField] private float MoveSpeed = 10f;
-    private Vector2 MoveDirection;
+    private Vector3 MoveDirection;
     private Obstacle[] Obstacles;
     private float BodyRadius;
 
@@ -21,32 +21,37 @@ public class Snake : MonoBehaviour
 
     private void OnGameOver()
     {
-        MoveDirection = Vector2.zero;
+        MoveDirection = Vector3.zero;
     }
 
-    public void MoveTowardsDirection(Vector2 direction)
+    public void MoveTowardsDirection(Vector3 direction)
     {
-        MoveDirection = direction.normalized;
+        MoveDirection = direction;
     }
 
     private void Update()
     {
-        if (MoveDirection != Vector2.zero)
+        if (MoveDirection != Vector3.zero)
         {
-            transform.Translate(MoveSpeed * Time.deltaTime * MoveDirection);
+            transform.position += MoveSpeed * Time.deltaTime * MoveDirection;
         }
 
-        CheckCollision();
+        if (Obstacles.Length > 0)
+        {
+            CheckCollision();
+        }
     }
 
     private void CheckCollision()
     {
         for (int i = 0; i < Obstacles.Length; i++)
         {
-            if (Obstacles[i].CalculatedDistance(transform.position, BodyRadius) <= 0)
+            if (Obstacles[i].IsCollidedWith(transform.position, BodyRadius, MoveDirection))
             {
-                Debug.Log("Collided with " + Obstacles[i].name);
-                MoveDirection = Vector2.zero;
+                MoveDirection = Vector3.Reflect(MoveDirection, Obstacles[i].HitNormal(transform.position, BodyRadius));
+
+                float angle = Mathf.Atan2(MoveDirection.y, MoveDirection.x) * Mathf.Rad2Deg;
+                transform.rotation = Quaternion.Euler(0, 0, angle);
             }
         }
     }

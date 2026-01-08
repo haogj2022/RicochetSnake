@@ -90,6 +90,7 @@ public class DragToAim : MonoBehaviour
             Vector2 newPos = StartPoint;
             Vector2 newDir = Direction.normalized;
             RaycastHit2D hit = Physics2D.Raycast(newPos, newDir, MaxDistance);
+
             if (hit)
             {
                 DotLines[i].SetPosition(0, newPos);
