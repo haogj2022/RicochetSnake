@@ -26,7 +26,7 @@ public class Snake : MonoBehaviour
 
     public void MoveTowardsDirection(Vector3 direction)
     {
-        MoveDirection = direction;
+        MoveDirection = direction.normalized;
     }
 
     private void Update()
@@ -46,9 +46,10 @@ public class Snake : MonoBehaviour
     {
         for (int i = 0; i < Obstacles.Length; i++)
         {
-            if (Obstacles[i].IsCollidedWith(transform.position, BodyRadius, MoveDirection))
+            if (Obstacles[i].IsCollidedWith(transform.position, BodyRadius))
             {
-                MoveDirection = Vector3.Reflect(MoveDirection, Obstacles[i].HitNormal(transform.position, BodyRadius));
+                Debug.Log("Collided with Obstacle: " + Obstacles[i].name);
+                MoveDirection = Obstacles[i].GetNewDirection(transform.position, BodyRadius, MoveDirection);
 
                 float angle = Mathf.Atan2(MoveDirection.y, MoveDirection.x) * Mathf.Rad2Deg;
                 transform.rotation = Quaternion.Euler(0, 0, angle);

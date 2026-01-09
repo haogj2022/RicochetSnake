@@ -6,8 +6,8 @@ public class DragToAim : MonoBehaviour
     [SerializeField] private LineRenderer DotLinePrefab;
     [SerializeField] private GameObject DotLineContainer;
     [SerializeField] private int DotLineCount = 2;
-    private float MinAngle = 10f;
-    private float MaxAngle = 170f;
+    [SerializeField] private float MinAngle = 10f;
+    [SerializeField] private float MaxAngle = 170f;
     private float CurrentAngle;
     private Vector2 StartPoint;
     private Vector2 EndPoint;
@@ -55,7 +55,8 @@ public class DragToAim : MonoBehaviour
         {
             StartAiming();
 
-            if (CurrentAngle > MinAngle && CurrentAngle < MaxAngle)
+            if (CurrentAngle > MinAngle && CurrentAngle < MaxAngle ||
+                MinAngle == 0 && MaxAngle == 0)
             {
                 ShowDotLine();
             }
@@ -75,7 +76,8 @@ public class DragToAim : MonoBehaviour
         Direction = StartPoint - EndPoint;
         CurrentAngle = Mathf.Atan2(Direction.y, Direction.x) * Mathf.Rad2Deg;
 
-        if (CurrentAngle > MinAngle && CurrentAngle < MaxAngle)
+        if (CurrentAngle > MinAngle && CurrentAngle < MaxAngle ||
+            MinAngle == 0 && MaxAngle == 0)
         {
             transform.rotation = Quaternion.Euler(0, 0, CurrentAngle);
         }

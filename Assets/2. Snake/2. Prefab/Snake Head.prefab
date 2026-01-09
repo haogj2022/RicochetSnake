@@ -245,6 +245,8 @@ MonoBehaviour:
   DotLinePrefab: {fileID: 7255772237149820198, guid: 2998b361669861544bc517d68378a933, type: 3}
   DotLineContainer: {fileID: 6073516618085103496}
   DotLineCount: 2
+  MinAngle: 10
+  MaxAngle: 170
 --- !u!1 &4592305899912632702
 GameObject:
   m_ObjectHideFlags: 0

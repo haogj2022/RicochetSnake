@@ -14,7 +14,7 @@ public class Obstacle : MonoBehaviour
         Down = transform.position.y - (Height / 2);
     }
 
-    public bool IsCollidedWith(Vector3 position, float radius, Vector3 direction)
+    public bool IsCollidedWith(Vector3 position, float radius)
     {
         if (position.x >= Left - radius && position.x <= Right + radius &&
             position.y <= Up + radius && position.y >= Down - radius)
@@ -24,28 +24,32 @@ public class Obstacle : MonoBehaviour
         return false;
     }
 
-    public Vector3 HitNormal(Vector3 position, float radius)
+    public Vector3 GetNewDirection(Vector3 position, float radius, Vector3 direction)
     {
-        if (position.x >= Left - radius)
+        if (position.x >= Left && position.x <= Right &&
+            position.y <= Up + radius && position.y > Down)
         {
-            return Vector3.left;
+            return Vector3.Reflect(direction, Vector3.up);
         }
 
-        if (position.x <= Right + radius)
+        if (position.x >= Left && position.x <= Right &&
+            position.y >= Down - radius && position.y < Up)
         {
-            return Vector3.right;
+            return Vector3.Reflect(direction, Vector3.down);
         }
 
-        if (position.y <= Up + radius)
+        if (position.x >= Left - radius && position.x < Right &&
+            position.y >= Down && position.y <= Up)
         {
-            return Vector3.up;
+            return Vector3.Reflect(direction, Vector3.left);
         }
 
-        if (position.y >= Down - radius)
+        if (position.x <= Right + radius && position.x > Left &&
+            position.y >= Down && position.y <= Up)
         {
-            return Vector3.down;
+            return Vector3.Reflect(direction, Vector3.right);
         }
 
-        return Vector3.zero;
+        return Vector3.Reflect(direction, direction);
     }
 }
