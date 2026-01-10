@@ -2,54 +2,62 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    private float Width, Height, Left, Right, Up, Down;
+    private float Width, Height;
+    private Vector3 BottomLeftCorner;
+    private Vector3 CircleCenter;
 
     private void Start()
     {
         Width = transform.localScale.x;
         Height = transform.localScale.y;
-        Left = transform.position.x - (Width / 2);
-        Right = transform.position.x + (Width / 2);
-        Up = transform.position.y + (Height / 2);
-        Down = transform.position.y - (Height / 2);
+
+        BottomLeftCorner = new Vector3(
+            transform.position.x - (Width / 2),
+            transform.position.y - (Height / 2), 0);
     }
 
-    public bool IsCollidedWith(Vector3 position, float radius)
+    public Vector3 GetCircleCenter()
     {
-        if (position.x >= Left - radius && position.x <= Right + radius &&
-            position.y <= Up + radius && position.y >= Down - radius)
+        return CircleCenter;
+    }
+
+    public bool IsOverlappedWith(Vector3 circle, float radius)
+    {
+        float closestX = Mathf.Clamp(circle.x, BottomLeftCorner.x, BottomLeftCorner.x + Width);
+        float closestY = Mathf.Clamp(circle.y, BottomLeftCorner.y, BottomLeftCorner.y + Height);
+
+        float distanceX = circle.x - closestX;
+        float distanceY = circle.y - closestY;
+        float distance = Mathf.Sqrt(distanceX * distanceX + distanceY * distanceY);
+
+        if (distance < radius && distance != 0)
         {
+            float depth = radius - distance + 0.01f;
+            Vector3 normal = new(distanceX / distance, distanceY / distance);
+            circle.x += normal.x * depth;
+            circle.y += normal.y * depth;
+            CircleCenter = circle;
+
             return true;
         }
+
         return false;
     }
 
-    public Vector3 GetNewDirection(Vector3 position, float radius, Vector3 direction)
+    public Vector3 GetReflectDirection(Vector3 circle, float radius, Vector3 direction)
     {
-        if (position.x >= Left && position.x <= Right &&
-            position.y <= Up + radius && position.y > Down)
+        if (circle.x < BottomLeftCorner.x || circle.x > BottomLeftCorner.x + Width)
         {
-            return Vector3.Reflect(direction, Vector3.up);
+            direction.x = -direction.x;
+            return direction;
         }
 
-        if (position.x >= Left && position.x <= Right &&
-            position.y >= Down - radius && position.y < Up)
+        if (circle.y < BottomLeftCorner.y || circle.y > BottomLeftCorner.y + Height)
         {
-            return Vector3.Reflect(direction, Vector3.down);
+            direction.y = -direction.y;
+            return direction;
         }
 
-        if (position.x >= Left - radius && position.x < Right &&
-            position.y >= Down && position.y <= Up)
-        {
-            return Vector3.Reflect(direction, Vector3.left);
-        }
-
-        if (position.x <= Right + radius && position.x > Left &&
-            position.y >= Down && position.y <= Up)
-        {
-            return Vector3.Reflect(direction, Vector3.right);
-        }
-
-        return Vector3.Reflect(direction, direction);
+        return Vector3.zero;
     }
 }

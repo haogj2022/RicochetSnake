@@ -24,33 +24,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void Start()
-    {
-        OnMoveComplete += CheckBounceCount;
-    }
-
-    private void OnDestroy()
-    {
-        OnMoveComplete -= CheckBounceCount;
-    }
-
-    private void CheckBounceCount()
-    {
-        if (BounceCount <= 0)
-        {
-            OnGameOver();
-        }
-    }
-
     private void Update()
     {
         BounceCountText.text = BounceCount.ToString();
         BounceCountText.transform.position = Player.transform.position;
     }
 
-    public void DecreaseBounceCount(int amount)
+    public void DecreaseBounceCount(int count)
     {
-        BounceCount -= amount;
+        BounceCount -= count;
 
         if (BounceCount < 4)
         {
@@ -62,5 +44,10 @@ public class GameManager : MonoBehaviour
                 OnGameOver();
             }
         }
+    }
+
+    public void IncreaseBounceCount(int count)
+    {
+        BounceCount += count;
     }
 }

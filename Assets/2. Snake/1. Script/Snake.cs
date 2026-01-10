@@ -6,6 +6,7 @@ public class Snake : MonoBehaviour
     private Vector3 MoveDirection;
     private Obstacle[] Obstacles;
     private float BodyRadius;
+    private bool CanMove = true;
 
     private void Start()
     {
@@ -21,38 +22,37 @@ public class Snake : MonoBehaviour
 
     private void OnGameOver()
     {
-        MoveDirection = Vector3.zero;
+        CanMove = false;
     }
 
     public void MoveTowardsDirection(Vector3 direction)
     {
         MoveDirection = direction.normalized;
+        CanMove = true;
     }
 
     private void Update()
     {
-        if (MoveDirection != Vector3.zero)
+        if (CanMove)
         {
             transform.position += MoveSpeed * Time.deltaTime * MoveDirection;
         }
 
-        if (Obstacles.Length > 0)
-        {
-            CheckCollision();
-        }
+        CheckCollision();
     }
 
     private void CheckCollision()
     {
         for (int i = 0; i < Obstacles.Length; i++)
         {
-            if (Obstacles[i].IsCollidedWith(transform.position, BodyRadius))
+            if (Obstacles[i].IsOverlappedWith(transform.position, BodyRadius))
             {
-                Debug.Log("Collided with Obstacle: " + Obstacles[i].name);
-                MoveDirection = Obstacles[i].GetNewDirection(transform.position, BodyRadius, MoveDirection);
+                transform.position = Obstacles[i].GetCircleCenter();
+                MoveDirection = Obstacles[i].GetReflectDirection(transform.position, BodyRadius, MoveDirection);
 
                 float angle = Mathf.Atan2(MoveDirection.y, MoveDirection.x) * Mathf.Rad2Deg;
                 transform.rotation = Quaternion.Euler(0, 0, angle);
+                GameManager.Instance.DecreaseBounceCount(1);
             }
         }
     }
