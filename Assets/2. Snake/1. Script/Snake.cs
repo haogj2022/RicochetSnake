@@ -48,7 +48,7 @@ public class Snake : MonoBehaviour
             if (Obstacles[i].IsOverlappedWith(transform.position, BodyRadius))
             {
                 transform.position = Obstacles[i].GetCircleCenter();
-                MoveDirection = Obstacles[i].GetReflectDirection(transform.position, BodyRadius, MoveDirection);
+                MoveDirection = Obstacles[i].GetReflectDirection(transform.position, MoveDirection);
 
                 float angle = Mathf.Atan2(MoveDirection.y, MoveDirection.x) * Mathf.Rad2Deg;
                 transform.rotation = Quaternion.Euler(0, 0, angle);

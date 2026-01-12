@@ -2,18 +2,17 @@ using UnityEngine;
 
 public class Obstacle : MonoBehaviour
 {
-    private float Width, Height;
-    private Vector3 BottomLeftCorner;
+    private float Width, Height, Left, Right, Top, Bottom;
     private Vector3 CircleCenter;
 
     private void Start()
     {
         Width = transform.localScale.x;
         Height = transform.localScale.y;
-
-        BottomLeftCorner = new Vector3(
-            transform.position.x - (Width / 2),
-            transform.position.y - (Height / 2), 0);
+        Left = transform.position.x - Width / 2;
+        Right = transform.position.x + Width / 2;
+        Top = transform.position.y + Height / 2;
+        Bottom = transform.position.y - Height / 2;
     }
 
     public Vector3 GetCircleCenter()
@@ -21,22 +20,21 @@ public class Obstacle : MonoBehaviour
         return CircleCenter;
     }
 
-    public bool IsOverlappedWith(Vector3 circle, float radius)
+    public bool IsOverlappedWith(Vector3 circleCenter, float radius)
     {
-        float closestX = Mathf.Clamp(circle.x, BottomLeftCorner.x, BottomLeftCorner.x + Width);
-        float closestY = Mathf.Clamp(circle.y, BottomLeftCorner.y, BottomLeftCorner.y + Height);
+        float closestX = Mathf.Clamp(circleCenter.x, Left, Right);
+        float closestY = Mathf.Clamp(circleCenter.y, Bottom, Top);
 
-        float distanceX = circle.x - closestX;
-        float distanceY = circle.y - closestY;
-        float distance = Mathf.Sqrt(distanceX * distanceX + distanceY * distanceY);
+        float distanceX = circleCenter.x - closestX;
+        float distanceY = circleCenter.y - closestY;
+        float distance = distanceX * distanceX + distanceY * distanceY;
 
-        if (distance < radius && distance != 0)
+        if (distance < radius * radius)
         {
             float depth = radius - distance + 0.01f;
-            Vector3 normal = new(distanceX / distance, distanceY / distance);
-            circle.x += normal.x * depth;
-            circle.y += normal.y * depth;
-            CircleCenter = circle;
+            Vector3 normal = new(distanceX, distanceY);
+            circleCenter += normal * depth;
+            CircleCenter = circleCenter;
 
             return true;
         }
@@ -44,15 +42,23 @@ public class Obstacle : MonoBehaviour
         return false;
     }
 
-    public Vector3 GetReflectDirection(Vector3 circle, float radius, Vector3 direction)
+    public Vector3 GetReflectDirection(Vector3 circleCenter, Vector3 direction)
     {
-        if (circle.x < BottomLeftCorner.x || circle.x > BottomLeftCorner.x + Width)
+        if (circleCenter.x > Right && circleCenter.y < Bottom ||
+            circleCenter.x < Left && circleCenter.y < Bottom ||
+            circleCenter.x > Right && circleCenter.y > Top ||
+            circleCenter.x < Left && circleCenter.y > Top)
+        {
+            return Vector2.Reflect(direction, (circleCenter - transform.position).normalized);
+        }
+
+        if (circleCenter.x < Left || circleCenter.x > Right)
         {
             direction.x = -direction.x;
             return direction;
         }
 
-        if (circle.y < BottomLeftCorner.y || circle.y > BottomLeftCorner.y + Height)
+        if (circleCenter.y < Bottom || circleCenter.y > Top)
         {
             direction.y = -direction.y;
             return direction;
