@@ -3,7 +3,7 @@ using UnityEngine;
 public class Snake : MonoBehaviour
 {
     [SerializeField] private float MoveSpeed = 10f;
-    private Vector3 MoveDirection;
+    private Vector2 MoveDirection;
     private Obstacle[] Obstacles;
     private float BodyRadius;
     private bool CanMove = true;
@@ -25,7 +25,7 @@ public class Snake : MonoBehaviour
         CanMove = false;
     }
 
-    public void MoveTowardsDirection(Vector3 direction)
+    public void MoveTowardsDirection(Vector2 direction)
     {
         MoveDirection = direction.normalized;
         CanMove = true;
@@ -35,7 +35,7 @@ public class Snake : MonoBehaviour
     {
         if (CanMove)
         {
-            transform.position += MoveSpeed * Time.deltaTime * MoveDirection;
+            transform.position += MoveSpeed * Time.deltaTime * (Vector3)MoveDirection;
         }
 
         CheckCollision();
@@ -45,14 +45,13 @@ public class Snake : MonoBehaviour
     {
         for (int i = 0; i < Obstacles.Length; i++)
         {
-            if (Obstacles[i].IsOverlappedWith(transform.position, BodyRadius))
+            if (Obstacles[i].IsOverlappedWith(transform.position, BodyRadius, MoveDirection))
             {
                 transform.position = Obstacles[i].GetCircleCenter();
                 MoveDirection = Obstacles[i].GetReflectDirection(transform.position, MoveDirection);
 
                 float angle = Mathf.Atan2(MoveDirection.y, MoveDirection.x) * Mathf.Rad2Deg;
                 transform.rotation = Quaternion.Euler(0, 0, angle);
-                GameManager.Instance.DecreaseBounceCount(1);
             }
         }
     }

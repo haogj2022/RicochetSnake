@@ -5,7 +5,6 @@ public class SnakeShooter : MonoBehaviour
     [SerializeField] private Snake SnakeHead;
     private bool CanShoot = true;
 
-
     private void Start()
     {
         GameManager.Instance.OnMoveComplete += OnMoveComplete;
