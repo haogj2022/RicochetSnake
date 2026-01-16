@@ -38,8 +38,8 @@ public class Obstacle : MonoBehaviour
             if (ClosestDistance == 0)
             {
                 Debug.Log("overlap");
-                distanceX = -moveDirection.x - 0.01f;
-                distanceY = -moveDirection.y - 0.01f;
+                distanceX = -moveDirection.x - 0.1f;
+                distanceY = -moveDirection.y - 0.1f;
             }
             else
             {
@@ -65,19 +65,19 @@ public class Obstacle : MonoBehaviour
             circleCenter.x > Right && circleCenter.y > Top ||
             circleCenter.x < Left && circleCenter.y > Top)
         {
-            return Vector2.Reflect(direction, (circleCenter - (Vector2)transform.position).normalized);
+            return Vector2.Reflect(direction, circleCenter - (Vector2)transform.position).normalized;
         }
 
         if (circleCenter.x < Left || circleCenter.x > Right)
         {
             direction.x = -direction.x;
-            return direction;
+            return direction.normalized;
         }
 
         if (circleCenter.y < Bottom || circleCenter.y > Top)
         {
             direction.y = -direction.y;
-            return direction;
+            return direction.normalized;
         }
 
         return Vector2.zero;

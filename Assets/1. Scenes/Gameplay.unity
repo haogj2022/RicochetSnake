@@ -196,18 +196,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Block (2)
       objectReference: {fileID: 0}
-    - target: {fileID: 285058292017451087, guid: 90dab9091c16ce04bb78d0c90d4816cf, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8885304908097823661, guid: 90dab9091c16ce04bb78d0c90d4816cf, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8885304908097823661, guid: 90dab9091c16ce04bb78d0c90d4816cf, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.5
-      objectReference: {fileID: 0}
     - target: {fileID: 8885304908097823661, guid: 90dab9091c16ce04bb78d0c90d4816cf, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -1000,18 +988,6 @@ PrefabInstance:
     - target: {fileID: 285058292017451087, guid: 90dab9091c16ce04bb78d0c90d4816cf, type: 3}
       propertyPath: m_Name
       value: Block (1)
-      objectReference: {fileID: 0}
-    - target: {fileID: 285058292017451087, guid: 90dab9091c16ce04bb78d0c90d4816cf, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8885304908097823661, guid: 90dab9091c16ce04bb78d0c90d4816cf, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8885304908097823661, guid: 90dab9091c16ce04bb78d0c90d4816cf, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8885304908097823661, guid: 90dab9091c16ce04bb78d0c90d4816cf, type: 3}
       propertyPath: m_LocalPosition.x
@@ -2976,10 +2952,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Apple
       objectReference: {fileID: 0}
-    - target: {fileID: 9119670046652596579, guid: b47cb1267207a804ea08a544eb35f700, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -2996,14 +2968,6 @@ PrefabInstance:
     - target: {fileID: 285058292017451087, guid: 90dab9091c16ce04bb78d0c90d4816cf, type: 3}
       propertyPath: m_Name
       value: Block
-      objectReference: {fileID: 0}
-    - target: {fileID: 8885304908097823661, guid: 90dab9091c16ce04bb78d0c90d4816cf, type: 3}
-      propertyPath: m_LocalScale.x
-      value: 0.5
-      objectReference: {fileID: 0}
-    - target: {fileID: 8885304908097823661, guid: 90dab9091c16ce04bb78d0c90d4816cf, type: 3}
-      propertyPath: m_LocalScale.y
-      value: 0.5
       objectReference: {fileID: 0}
     - target: {fileID: 8885304908097823661, guid: 90dab9091c16ce04bb78d0c90d4816cf, type: 3}
       propertyPath: m_LocalPosition.x
