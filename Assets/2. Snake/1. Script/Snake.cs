@@ -9,8 +9,9 @@ public class Snake : MonoBehaviour
     [SerializeField] private float SnakeLength = 1f;
     private Vector2 MoveDirection;
     private Obstacle[] Obstacles;
+    private GameObject[] Food;
     private float BodyRadius;
-    private bool CanMove = true;
+    private bool CanMove;
 
     private List<Transform> SnakeTails = new();
     private List<SnakeBody> BodyParts = new();
@@ -21,6 +22,7 @@ public class Snake : MonoBehaviour
     {
         GameManager.Instance.OnGameOver += OnGameOver;
         Obstacles = FindObjectsOfType<Obstacle>();
+        Food = GameObject.FindGameObjectsWithTag("Food");
         BodyRadius = Mathf.Max(transform.localScale.x, transform.localScale.y) / 2;
 
         SpawnNewPart();
@@ -45,18 +47,18 @@ public class Snake : MonoBehaviour
 
     private void Update()
     {
-        CheckCollision();
-
         if (CanMove)
         {
             transform.position += MoveSpeed * Time.deltaTime * (Vector3)MoveDirection;
         }
 
+        CheckCollision();
         UpdateHeadPositions();
         UpdateSnakeTails();
         UpdateBodyParts();
     }
 
+    #region Draw Snake
     private void UpdateHeadPositions()
     {
         if (Vector2.Distance(transform.position, LastHeadPosition) > SnakeLength)
@@ -68,10 +70,11 @@ public class Snake : MonoBehaviour
         if (HeadPositions.Count > 0)
         {
             SnakeTails[0].position = Vector2.MoveTowards(
-                SnakeTails[0].position, HeadPositions[0], MoveSpeed * 1.5f * Time.deltaTime);
+                SnakeTails[0].position, HeadPositions[0], MoveSpeed * Time.deltaTime);
 
-            if (SnakeTails[0].position == (Vector3)HeadPositions[0])
+            if (Vector2.Distance(SnakeTails[0].position, HeadPositions[0]) < 0.1f)
             {
+                SnakeTails[0].position = HeadPositions[0];
                 HeadPositions.RemoveAt(0);
             }
         }
@@ -109,6 +112,7 @@ public class Snake : MonoBehaviour
             }
         }
     }
+    #endregion Draw Snake
 
     private void CheckCollision()
     {
@@ -125,6 +129,26 @@ public class Snake : MonoBehaviour
                 MoveDirection = Obstacles[i].GetReflectDirection(transform.position, MoveDirection);
                 float angle = Mathf.Atan2(MoveDirection.y, MoveDirection.x) * Mathf.Rad2Deg;
                 transform.rotation = Quaternion.Euler(0, 0, angle);
+
+                if (Obstacles[i].gameObject.CompareTag("Finish"))
+                {
+                    CanMove = false;
+                    GameManager.Instance.OnMoveComplete();
+                }
+                else
+                {
+                    GameManager.Instance.DecreaseBounceCount(1);
+                }
+            }
+        }
+
+        for (int i = 0; i < Food.Length; i++)
+        {
+            if (Food[i].activeInHierarchy &&
+                Vector2.Distance(transform.position, Food[i].transform.position) < BodyRadius)
+            {
+                Food[i].SetActive(false);
+                GameManager.Instance.IncreaseBounceCount(1);
             }
         }
     }

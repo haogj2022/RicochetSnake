@@ -38,13 +38,8 @@ public class Obstacle : MonoBehaviour
             if (ClosestDistance == 0)
             {
                 Debug.Log("overlap");
-                distanceX = -moveDirection.x - 0.1f;
-                distanceY = -moveDirection.y - 0.1f;
-            }
-            else
-            {
-                Debug.Log("bounce");
-                GameManager.Instance.DecreaseBounceCount(1);
+                distanceX = -moveDirection.x - radius;
+                distanceY = -moveDirection.y - radius;
             }
 
             float depth = radius - ClosestDistance;
@@ -65,19 +60,20 @@ public class Obstacle : MonoBehaviour
             circleCenter.x > Right && circleCenter.y > Top ||
             circleCenter.x < Left && circleCenter.y > Top)
         {
-            return Vector2.Reflect(direction, circleCenter - (Vector2)transform.position).normalized;
+            Vector2 normal = (circleCenter - (Vector2)transform.position).normalized;
+            return Vector2.Reflect(direction, normal);
         }
 
         if (circleCenter.x < Left || circleCenter.x > Right)
         {
             direction.x = -direction.x;
-            return direction.normalized;
+            return direction;
         }
 
         if (circleCenter.y < Bottom || circleCenter.y > Top)
         {
             direction.y = -direction.y;
-            return direction.normalized;
+            return direction;
         }
 
         return Vector2.zero;

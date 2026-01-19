@@ -12,7 +12,7 @@ public class DragToAim : MonoBehaviour
     private Vector2 StartPoint;
     private Vector2 EndPoint;
     private Vector2 Direction;
-    private float MaxDistance = 100f;
+    private float MaxDistance = 10f;
     private List<LineRenderer> DotLines = new();
     private bool CanDrag = true;
 
