@@ -41,7 +41,14 @@ public class DragToAim : MonoBehaviour
 
     private void OnMoveComplete()
     {
-        CanDrag = true;
+        if (GameManager.Instance.GetAmmoCount() > 0)
+        {
+            CanDrag = true;
+        }
+        else
+        {
+            GameManager.Instance.OnGameOver();
+        }
     }
 
     private void OnGameOver()

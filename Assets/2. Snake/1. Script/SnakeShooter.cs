@@ -19,7 +19,14 @@ public class SnakeShooter : MonoBehaviour
 
     void OnMoveComplete()
     {
-        CanShoot = true;
+        if (GameManager.Instance.GetAmmoCount() > 0)
+        {
+            CanShoot = true;
+        }
+        else
+        {
+            GameManager.Instance.OnGameOver();
+        }
     }
 
     void OnGameOver()
@@ -32,6 +39,7 @@ public class SnakeShooter : MonoBehaviour
         if (Input.GetMouseButtonUp(0) && CanShoot)
         {
             MoveSnake();
+            GameManager.Instance.DecreaseAmmoCount();
         }
     }
 

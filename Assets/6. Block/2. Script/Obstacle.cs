@@ -37,7 +37,7 @@ public class Obstacle : MonoBehaviour
         {
             if (ClosestDistance == 0)
             {
-                Debug.Log("overlap");
+                Debug.Log("overlapped " + name);
                 distanceX = -moveDirection.x - radius;
                 distanceY = -moveDirection.y - radius;
             }

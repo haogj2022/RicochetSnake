@@ -137,7 +137,7 @@ public class Snake : MonoBehaviour
                 }
                 else
                 {
-                    GameManager.Instance.DecreaseBounceCount(1);
+                    GameManager.Instance.DecreaseBounceCount();
                 }
             }
         }
@@ -145,10 +145,10 @@ public class Snake : MonoBehaviour
         for (int i = 0; i < Food.Length; i++)
         {
             if (Food[i].activeInHierarchy &&
-                Vector2.Distance(transform.position, Food[i].transform.position) < BodyRadius)
+                Vector2.Distance(transform.position, Food[i].transform.position) < BodyRadius + 0.1f)
             {
                 Food[i].SetActive(false);
-                GameManager.Instance.IncreaseBounceCount(1);
+                GameManager.Instance.TryToIncreaseBounceCount();
             }
         }
     }
