@@ -8,30 +8,33 @@ public class Snake : MonoBehaviour
     [SerializeField] private float MoveSpeed = 10f;
     [SerializeField] private float SnakeLength = 1f;
     private Vector2 MoveDirection;
-    private Obstacle[] Obstacles;
-    private GameObject[] Food;
-    private float BodyRadius;
     private bool CanMove;
 
     private List<Transform> SnakeTails = new();
     private List<SnakeBody> BodyParts = new();
     private List<Vector2> HeadPositions = new();
     private Vector2 LastHeadPosition;
+    private Rigidbody2D PlayerBody;
 
     private void Start()
     {
+        GameManager.Instance.OnMoveComplete += OnMoveComplete;
         GameManager.Instance.OnGameOver += OnGameOver;
-        Obstacles = FindObjectsOfType<Obstacle>();
-        Food = GameObject.FindGameObjectsWithTag("Food");
-        BodyRadius = Mathf.Max(transform.localScale.x, transform.localScale.y) / 2;
 
         SpawnNewPart();
         LastHeadPosition = transform.position;
+        PlayerBody = GetComponent<Rigidbody2D>();
     }
 
     private void OnDestroy()
     {
+        GameManager.Instance.OnMoveComplete -= OnMoveComplete;
         GameManager.Instance.OnGameOver -= OnGameOver;
+    }
+
+    private void OnMoveComplete()
+    {
+        CanMove = false;
     }
 
     private void OnGameOver()
@@ -45,14 +48,20 @@ public class Snake : MonoBehaviour
         CanMove = true;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (CanMove)
         {
-            transform.position += MoveSpeed * Time.deltaTime * (Vector3)MoveDirection;
+            PlayerBody.velocity = MoveDirection * MoveSpeed;
         }
+        else
+        {
+            PlayerBody.velocity = Vector2.zero;
+        }
+    }
 
-        CheckCollision();
+    private void Update()
+    {
         UpdateHeadPositions();
         UpdateSnakeTails();
         UpdateBodyParts();
@@ -114,42 +123,34 @@ public class Snake : MonoBehaviour
     }
     #endregion Draw Snake
 
-    private void CheckCollision()
+    private void OnCollisionEnter2D(Collision2D collision)
     {
-        for (int i = 0; i < Obstacles.Length; i++)
+        LastHeadPosition = transform.position;
+        HeadPositions.Add(transform.position);
+        SpawnNewPart();
+
+        if (collision.gameObject.CompareTag("Obstacle"))
         {
-            if (Obstacles[i].IsOverlappedWith(transform.position, BodyRadius, MoveDirection))
-            {
-                transform.position = Obstacles[i].GetCircleCenter();
-                SpawnNewPart();
-
-                LastHeadPosition = transform.position;
-                HeadPositions.Add(LastHeadPosition);
-
-                MoveDirection = Obstacles[i].GetReflectDirection(transform.position, MoveDirection);
-                float angle = Mathf.Atan2(MoveDirection.y, MoveDirection.x) * Mathf.Rad2Deg;
-                transform.rotation = Quaternion.Euler(0, 0, angle);
-
-                if (Obstacles[i].gameObject.CompareTag("Finish"))
-                {
-                    CanMove = false;
-                    GameManager.Instance.OnMoveComplete();
-                }
-                else
-                {
-                    GameManager.Instance.DecreaseBounceCount();
-                }
-            }
+            Vector2 normal = collision.contacts[0].normal;
+            MoveDirection = Vector2.Reflect(MoveDirection, normal);
+            float angle = Mathf.Atan2(MoveDirection.y, MoveDirection.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+            GameManager.Instance.DecreaseBounceCount();
         }
 
-        for (int i = 0; i < Food.Length; i++)
+        if (collision.gameObject.CompareTag("Finish"))
         {
-            if (Food[i].activeInHierarchy &&
-                Vector2.Distance(transform.position, Food[i].transform.position) < BodyRadius + 0.1f)
-            {
-                Food[i].SetActive(false);
-                GameManager.Instance.TryToIncreaseBounceCount();
-            }
+            GameManager.Instance.ResetBounceCount();
+            GameManager.Instance.OnMoveComplete();
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        if (collision.CompareTag("Apple"))
+        {
+            collision.gameObject.SetActive(false);
+            GameManager.Instance.TryToIncreaseBounceCount();
         }
     }
 

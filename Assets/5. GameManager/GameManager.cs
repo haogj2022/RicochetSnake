@@ -6,13 +6,15 @@ public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     [SerializeField] private TMP_Text BounceCountText;
-    [SerializeField] private int BounceCount = 12;
+    [SerializeField] private int MaxBounceCount = 5;
     [SerializeField] private GameObject Player;
+    [SerializeField] private Vector3 PlayerStartPos = new(0, -2.5f, 0);
     [SerializeField] private float RecoverBounceCountChance = 0.1f;
     [SerializeField] private int AmmoCount = 3;
     public Action OnSnakeShot;
     public Action OnMoveComplete;
     public Action OnGameOver;
+    private int CurrentBounceCount;
 
     private void Awake()
     {
@@ -27,24 +29,42 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        ResetBounceCount();
+        ResetPlayerPosition();
+    }
+
+    public void ResetBounceCount()
+    {
+        CurrentBounceCount = MaxBounceCount;
+        BounceCountText.color = Color.white;
+    }
+
+    private void ResetPlayerPosition()
+    {
+        Player.transform.position = PlayerStartPos;
+    }
+
     private void Update()
     {
-        BounceCountText.text = BounceCount.ToString();
+        BounceCountText.text = CurrentBounceCount.ToString();
         BounceCountText.transform.position = Player.transform.position;
     }
 
     public void DecreaseBounceCount()
     {
-        BounceCount--;
+        CurrentBounceCount--;
 
-        if (BounceCount < 3)
+        if (CurrentBounceCount < 3)
         {
             BounceCountText.color = Color.red;
 
-            if (BounceCount <= 0)
+            if (CurrentBounceCount <= 0)
             {
-                BounceCount = 0;
-                OnGameOver();
+                ResetPlayerPosition();
+                ResetBounceCount();
+                OnMoveComplete();
             }
         }
     }
@@ -56,7 +76,7 @@ public class GameManager : MonoBehaviour
         if (randomValue < RecoverBounceCountChance)
         {
             Debug.Log("recover +1 bounce count from food");
-            BounceCount++;
+            CurrentBounceCount++;
         }
         else
         {
