@@ -1,20 +1,17 @@
 using System;
-using TMPro;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    [SerializeField] private TMP_Text BounceCountText;
-    [SerializeField] private int MaxBounceCount = 5;
-    [SerializeField] private GameObject Player;
-    [SerializeField] private Vector3 PlayerStartPos = new(0, -2.5f, 0);
-    [SerializeField] private float RecoverBounceCountChance = 0.1f;
-    [SerializeField] private int AmmoCount = 3;
-    public Action OnSnakeShot;
-    public Action OnMoveComplete;
-    public Action OnGameOver;
-    private int CurrentBounceCount;
+    [SerializeField] private int MaxAmmoCount = 3;
+    public Action<Vector2> OnSnakeShot;
+    public Action OnZeroBounceCount;
+    public Action OnMoveCompleted;
+    public Action OnLevelFailed;
+    public Action OnLevelCompleted;
+    private int CurrentAmmoCount;
+    private int FoodAmount;
 
     private void Awake()
     {
@@ -31,66 +28,29 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
-        ResetBounceCount();
-        ResetPlayerPosition();
-    }
-
-    public void ResetBounceCount()
-    {
-        CurrentBounceCount = MaxBounceCount;
-        BounceCountText.color = Color.white;
-    }
-
-    private void ResetPlayerPosition()
-    {
-        Player.transform.position = PlayerStartPos;
-    }
-
-    private void Update()
-    {
-        BounceCountText.text = CurrentBounceCount.ToString();
-        BounceCountText.transform.position = Player.transform.position;
-    }
-
-    public void DecreaseBounceCount()
-    {
-        CurrentBounceCount--;
-
-        if (CurrentBounceCount < 3)
-        {
-            BounceCountText.color = Color.red;
-
-            if (CurrentBounceCount <= 0)
-            {
-                ResetPlayerPosition();
-                ResetBounceCount();
-                OnMoveComplete();
-            }
-        }
-    }
-
-    public void TryToIncreaseBounceCount()
-    {
-        float randomValue = UnityEngine.Random.value;
-
-        if (randomValue < RecoverBounceCountChance)
-        {
-            Debug.Log("recover +1 bounce count from food");
-            CurrentBounceCount++;
-        }
-        else
-        {
-            Debug.Log("no bounce count recover from food");
-        }
+        CurrentAmmoCount = MaxAmmoCount;
+        FoodAmount = GameObject.FindGameObjectsWithTag("Apple").Length + GameObject.FindGameObjectsWithTag("Gold Apple").Length;
     }
 
     public void DecreaseAmmoCount()
     {
-        AmmoCount--;
+        CurrentAmmoCount--;
+    }
+
+    public void DecreaseFoodAmount()
+    {
+        FoodAmount--;
+
+        if (FoodAmount <= 0)
+        {
+            FoodAmount = 0;
+            OnLevelCompleted();
+            Debug.Log("Level Completed");
+        }
     }
 
     public int GetAmmoCount()
     {
-        return AmmoCount;
+        return CurrentAmmoCount;
     }
 }

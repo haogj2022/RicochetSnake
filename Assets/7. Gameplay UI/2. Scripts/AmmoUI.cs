@@ -13,11 +13,6 @@ public class AmmoUI : MonoBehaviour
     {
         AmmoCount = GameManager.Instance.GetAmmoCount();
 
-        if (AmmoCount < 0)
-        {
-            AmmoCount = 0;
-        }
-
         if (AmmoImageList.Count < AmmoCount)
         {
             Image newAmmoImage = PoolingSystem.Spawn<Image>(

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class Snake : MonoBehaviour
@@ -7,8 +8,15 @@ public class Snake : MonoBehaviour
     [SerializeField] private SnakeBody BodyPartPrefab;
     [SerializeField] private float MoveSpeed = 10f;
     [SerializeField] private float SnakeLength = 1f;
+    [SerializeField] private TMP_Text BounceCountText;
+    [SerializeField] private int MaxBounceCount = 5;
+    [SerializeField] private float RecoverBounceCountPercentage = 10;
+    [SerializeField] private GameObject AliveStatus;
+    [SerializeField] private GameObject DeadStatus;
     private Vector2 MoveDirection;
     private bool CanMove;
+    private int CurrentBounceCount;
+    private int MinBounceCount = 3;
 
     private List<Transform> SnakeTails = new();
     private List<SnakeBody> BodyParts = new();
@@ -18,34 +26,30 @@ public class Snake : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnMoveComplete += OnMoveComplete;
-        GameManager.Instance.OnGameOver += OnGameOver;
+        GameManager.Instance.OnSnakeShot += OnSnakeShot;
+        GameManager.Instance.OnLevelCompleted += OnLevelCompleted;
 
-        SpawnNewPart();
+        SpawnNewParts();
         LastHeadPosition = transform.position;
         PlayerBody = GetComponent<Rigidbody2D>();
+        CurrentBounceCount = MaxBounceCount;
     }
 
     private void OnDestroy()
     {
-        GameManager.Instance.OnMoveComplete -= OnMoveComplete;
-        GameManager.Instance.OnGameOver -= OnGameOver;
+        GameManager.Instance.OnSnakeShot -= OnSnakeShot;
+        GameManager.Instance.OnLevelCompleted -= OnLevelCompleted;
     }
 
-    private void OnMoveComplete()
+    private void OnSnakeShot(Vector2 moveDirection)
     {
-        CanMove = false;
-    }
-
-    private void OnGameOver()
-    {
-        CanMove = false;
-    }
-
-    public void MoveTowardsDirection(Vector2 direction)
-    {
-        MoveDirection = direction.normalized;
+        MoveDirection = moveDirection.normalized;
         CanMove = true;
+    }
+
+    private void OnLevelCompleted()
+    {
+        CanMove = false;
     }
 
     private void FixedUpdate()
@@ -62,9 +66,16 @@ public class Snake : MonoBehaviour
 
     private void Update()
     {
+        UpdateBounceCountText();
         UpdateHeadPositions();
         UpdateSnakeTails();
         UpdateBodyParts();
+    }
+
+    private void UpdateBounceCountText()
+    {
+        BounceCountText.text = CurrentBounceCount.ToString();
+        BounceCountText.transform.rotation = Quaternion.identity;
     }
 
     #region Draw Snake
@@ -76,7 +87,7 @@ public class Snake : MonoBehaviour
             HeadPositions.Add(LastHeadPosition);
         }
 
-        if (HeadPositions.Count > 0)
+        if (SnakeTails.Count > 0 && HeadPositions.Count > 0)
         {
             SnakeTails[0].position = Vector2.MoveTowards(
                 SnakeTails[0].position, HeadPositions[0], MoveSpeed * Time.deltaTime);
@@ -106,7 +117,7 @@ public class Snake : MonoBehaviour
 
     private void UpdateBodyParts()
     {
-        if (BodyParts.Count < 2)
+        if (BodyParts.Count > 0 && BodyParts.Count < 2)
         {
             BodyParts[0].SetPosition(SnakeTails[0].position, transform.position);
         }
@@ -127,34 +138,78 @@ public class Snake : MonoBehaviour
     {
         LastHeadPosition = transform.position;
         HeadPositions.Add(transform.position);
-        SpawnNewPart();
+        SpawnNewParts();
 
         if (collision.gameObject.CompareTag("Obstacle"))
         {
+            DecreaseBounceCount(1);
             Vector2 normal = collision.contacts[0].normal;
             MoveDirection = Vector2.Reflect(MoveDirection, normal);
             float angle = Mathf.Atan2(MoveDirection.y, MoveDirection.x) * Mathf.Rad2Deg;
-            transform.rotation = Quaternion.Euler(0, 0, angle);
-            GameManager.Instance.DecreaseBounceCount();
+
+            if (CurrentBounceCount > 0)
+            {
+                transform.rotation = Quaternion.Euler(0, 0, angle);
+            }
         }
 
         if (collision.gameObject.CompareTag("Finish"))
         {
-            GameManager.Instance.ResetBounceCount();
-            GameManager.Instance.OnMoveComplete();
-        }
-    }
+            CanMove = false;
+            GameManager.Instance.OnMoveCompleted();
 
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.CompareTag("Apple"))
+            if (GameManager.Instance.GetAmmoCount() > 0)
+            {
+                ResetBounceCount();
+            }
+            else
+            {
+                DespawnSelf();
+            }
+        }
+
+        if (collision.gameObject.CompareTag("Apple"))
         {
             collision.gameObject.SetActive(false);
-            GameManager.Instance.TryToIncreaseBounceCount();
+            IncreaseBounceCount();
+            GameManager.Instance.DecreaseFoodAmount();
         }
     }
 
-    private void SpawnNewPart()
+    private void IncreaseBounceCount()
+    {
+        float randomValue = Random.value;
+        float recoverChance = RecoverBounceCountPercentage / 100;
+
+        if (recoverChance < randomValue)
+        {
+            CurrentBounceCount++;
+        }
+    }
+
+    private void DecreaseBounceCount(int amount)
+    {
+        CurrentBounceCount -= amount;
+
+        if (CurrentBounceCount < MinBounceCount)
+        {
+            BounceCountText.color = Color.red;
+
+            if (CurrentBounceCount <= 0)
+            {
+                CurrentBounceCount = 0;
+                DespawnSelf();
+            }
+        }
+    }
+
+    private void ResetBounceCount()
+    {
+        CurrentBounceCount = MaxBounceCount;
+        BounceCountText.color = Color.white;
+    }
+
+    private void SpawnNewParts()
     {
         Transform newTail = PoolingSystem.Spawn<Transform>(
             SnakeTailPrefab.gameObject,
@@ -171,5 +226,30 @@ public class Snake : MonoBehaviour
             transform.position,
             Quaternion.identity);
         BodyParts.Add(newBodyPart);
+    }
+
+    private void DespawnOldParts()
+    {
+        for (int i = 0; i < SnakeTails.Count; i++)
+        {
+            PoolingSystem.Despawn(SnakeTailPrefab.gameObject, SnakeTails[i].gameObject);
+        }
+
+        for (int i = 0; i < BodyParts.Count; i++)
+        {
+            PoolingSystem.Despawn(BodyPartPrefab.gameObject, BodyParts[i].gameObject);
+        }
+
+        SnakeTails.Clear();
+        BodyParts.Clear();
+    }
+
+    private void DespawnSelf()
+    {
+        CanMove = false;
+        AliveStatus.SetActive(false);
+        DeadStatus.SetActive(true);
+        DespawnOldParts();
+        GameManager.Instance.OnZeroBounceCount();
     }
 }
