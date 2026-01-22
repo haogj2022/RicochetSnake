@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6488474318630649095}
   - component: {fileID: 1562794086174108231}
   m_Layer: 5
-  m_Name: Current Coin
+  m_Name: Current Gold
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -112,7 +112,7 @@ RectTransform:
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 200, y: 50}
+  m_SizeDelta: {x: 50, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &4156864634639568382
 CanvasRenderer:
@@ -923,7 +923,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1516939608670526467}
   m_Layer: 5
-  m_Name: Coins
+  m_Name: Gold
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1196,7 +1196,7 @@ GameObject:
   - component: {fileID: 189013977581114222}
   - component: {fileID: 478209129262188913}
   m_Layer: 5
-  m_Name: Coin Image
+  m_Name: Gold Image
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
