@@ -4,24 +4,10 @@ using UnityEngine;
 
 public class Snake : MonoBehaviour
 {
-    [SerializeField] private Transform SnakeTailPrefab;
-    [SerializeField] private SnakeBody BodyPartPrefab;
+    #region MoveSnakeHead
     [SerializeField] private float MoveSpeed = 10f;
-    [SerializeField] private float SnakeLength = 1f;
-    [SerializeField] private TMP_Text BounceCountText;
-    [SerializeField] private int MaxBounceCount = 5;
-    [SerializeField] private float RecoverBounceCountPercentage = 10;
-    [SerializeField] private GameObject AliveStatus;
-    [SerializeField] private GameObject DeadStatus;
     private Vector2 MoveDirection;
     private bool CanMove;
-    private int CurrentBounceCount;
-    private int MinBounceCount = 3;
-
-    private List<Transform> SnakeTails = new();
-    private List<SnakeBody> BodyParts = new();
-    private List<Vector2> HeadPositions = new();
-    private Vector2 LastHeadPosition;
     private Rigidbody2D PlayerBody;
 
     private void Start()
@@ -63,7 +49,16 @@ public class Snake : MonoBehaviour
             PlayerBody.velocity = Vector2.zero;
         }
     }
+    #endregion MoveSnakeHead
 
+    #region DrawSnake
+    [SerializeField] private Transform SnakeTailPrefab;
+    [SerializeField] private SnakeBody BodyPartPrefab;
+    [SerializeField] private float SnakeLength = 1f;
+    private List<Transform> SnakeTails = new();
+    private List<SnakeBody> BodyParts = new();
+    private List<Vector2> HeadPositions = new();
+    private Vector2 LastHeadPosition;
     private void Update()
     {
         UpdateBounceCountText();
@@ -72,13 +67,6 @@ public class Snake : MonoBehaviour
         UpdateBodyParts();
     }
 
-    private void UpdateBounceCountText()
-    {
-        BounceCountText.text = CurrentBounceCount.ToString();
-        BounceCountText.transform.rotation = Quaternion.identity;
-    }
-
-    #region Draw Snake
     private void UpdateHeadPositions()
     {
         if (Vector2.Distance(transform.position, LastHeadPosition) > SnakeLength)
@@ -132,7 +120,46 @@ public class Snake : MonoBehaviour
             }
         }
     }
-    #endregion Draw Snake
+
+    private void SpawnNewParts()
+    {
+        Transform newTail = PoolingSystem.Spawn<Transform>(
+            SnakeTailPrefab.gameObject,
+            transform.parent,
+            transform.localScale,
+            transform.position,
+            Quaternion.identity);
+        SnakeTails.Add(newTail);
+
+        SnakeBody newBodyPart = PoolingSystem.Spawn<SnakeBody>(
+            BodyPartPrefab.gameObject,
+            transform.parent,
+            transform.localScale,
+            transform.position,
+            Quaternion.identity);
+        BodyParts.Add(newBodyPart);
+    }
+
+    private void DespawnOldParts()
+    {
+        for (int i = 0; i < SnakeTails.Count; i++)
+        {
+            PoolingSystem.Despawn(SnakeTailPrefab.gameObject, SnakeTails[i].gameObject);
+        }
+
+        for (int i = 0; i < BodyParts.Count; i++)
+        {
+            PoolingSystem.Despawn(BodyPartPrefab.gameObject, BodyParts[i].gameObject);
+        }
+
+        SnakeTails.Clear();
+        BodyParts.Clear();
+    }
+    #endregion DrawSnake
+
+    #region HandleCollision
+    [SerializeField] private GameObject AliveStatus;
+    [SerializeField] private GameObject DeadStatus;
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -176,6 +203,29 @@ public class Snake : MonoBehaviour
         }
     }
 
+    private void DespawnSelf()
+    {
+        CanMove = false;
+        AliveStatus.SetActive(false);
+        DeadStatus.SetActive(true);
+        DespawnOldParts();
+        GameManager.Instance.OnZeroBounceCount();
+    }
+    #endregion HandleCollision
+
+    #region UpdateBounceCount
+    [SerializeField] private TMP_Text BounceCountText;
+    [SerializeField] private int MaxBounceCount = 5;
+    [SerializeField] private float RecoverBounceCountPercentage = 10;
+    private int CurrentBounceCount;
+    private int MinBounceCount = 3;
+
+    private void UpdateBounceCountText()
+    {
+        BounceCountText.text = CurrentBounceCount.ToString();
+        BounceCountText.transform.rotation = Quaternion.identity;
+    }
+
     private void IncreaseBounceCount()
     {
         float randomValue = Random.value;
@@ -208,48 +258,5 @@ public class Snake : MonoBehaviour
         CurrentBounceCount = MaxBounceCount;
         BounceCountText.color = Color.white;
     }
-
-    private void SpawnNewParts()
-    {
-        Transform newTail = PoolingSystem.Spawn<Transform>(
-            SnakeTailPrefab.gameObject,
-            transform.parent,
-            transform.localScale,
-            transform.position,
-            Quaternion.identity);
-        SnakeTails.Add(newTail);
-
-        SnakeBody newBodyPart = PoolingSystem.Spawn<SnakeBody>(
-            BodyPartPrefab.gameObject,
-            transform.parent,
-            transform.localScale,
-            transform.position,
-            Quaternion.identity);
-        BodyParts.Add(newBodyPart);
-    }
-
-    private void DespawnOldParts()
-    {
-        for (int i = 0; i < SnakeTails.Count; i++)
-        {
-            PoolingSystem.Despawn(SnakeTailPrefab.gameObject, SnakeTails[i].gameObject);
-        }
-
-        for (int i = 0; i < BodyParts.Count; i++)
-        {
-            PoolingSystem.Despawn(BodyPartPrefab.gameObject, BodyParts[i].gameObject);
-        }
-
-        SnakeTails.Clear();
-        BodyParts.Clear();
-    }
-
-    private void DespawnSelf()
-    {
-        CanMove = false;
-        AliveStatus.SetActive(false);
-        DeadStatus.SetActive(true);
-        DespawnOldParts();
-        GameManager.Instance.OnZeroBounceCount();
-    }
+    #endregion UpdateBounceCount
 }

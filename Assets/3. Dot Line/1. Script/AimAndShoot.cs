@@ -3,22 +3,7 @@ using UnityEngine;
 
 public class AimAndShoot : MonoBehaviour
 {
-    [SerializeField] private LineRenderer DotLinePrefab;
-    [SerializeField] private GameObject DotLineContainer;
-    [SerializeField] private int DotLineCount = 2;
-    [SerializeField] private float MinAngle = 10f;
-    [SerializeField] private float MaxAngle = 170f;
-    [SerializeField] private GameObject SnakeHeadVisualPrefab;
-    private float CurrentAngle;
-    private Vector2 StartPoint;
-    private Vector2 EndPoint;
-    private Vector2 AimDirection;
-    private List<LineRenderer> DotLines = new();
-    private bool CanAim = true;
-    private bool CanShoot = true;
-    private List<Transform> Visuals = new();
-    private float BodyRadius;
-
+    #region SetUpVisuals
     private void Start()
     {
         GameManager.Instance.OnMoveCompleted += OnMoveCompleted;
@@ -53,6 +38,18 @@ public class AimAndShoot : MonoBehaviour
             CanShoot = false;
         }
     }
+    #endregion SetUpVisuals
+
+    #region HandleMouseEvent
+    [SerializeField] private float MinAngle = 10f;
+    [SerializeField] private float MaxAngle = 170f;
+    private float CurrentAngle;
+    private float BodyRadius;
+    private bool CanAim = true;
+    private bool CanShoot = true;
+    private Vector2 StartPoint;
+    private Vector2 EndPoint;
+    private Vector2 AimDirection;
 
     private void Update()
     {
@@ -101,6 +98,15 @@ public class AimAndShoot : MonoBehaviour
             transform.rotation = Quaternion.Euler(0, 0, CurrentAngle);
         }
     }
+    #endregion HandleMouseEvent
+
+    #region VisualizeDotLine
+    [SerializeField] private LineRenderer DotLinePrefab;
+    [SerializeField] private GameObject DotLineContainer;
+    [SerializeField] private int DotLineCount = 2;
+    [SerializeField] private GameObject SnakeHeadVisualPrefab;
+    private List<LineRenderer> DotLines = new();
+    private List<Transform> Visuals = new();
 
     private void ShowDotLine()
     {
@@ -153,4 +159,5 @@ public class AimAndShoot : MonoBehaviour
             Quaternion.identity);
         Visuals.Add(newVisual);
     }
+    #endregion VisualizeDotLine
 }
