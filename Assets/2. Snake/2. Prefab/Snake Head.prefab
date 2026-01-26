@@ -488,15 +488,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46a88df613f585041b34d827f2999479, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MoveSpeed: 10
   SnakeTailPrefab: {fileID: 8457735924933017548, guid: 8445c49fcb6371c47b65456638269639, type: 3}
   BodyPartPrefab: {fileID: 7800034050563929040, guid: 898bc6cf9dd298444b3b09b105b35578, type: 3}
-  MoveSpeed: 10
   SnakeLength: 1
-  BounceCountText: {fileID: 2642182689596768916}
-  MaxBounceCount: 5
-  RecoverBounceCountPercentage: 10
   AliveStatus: {fileID: 476792338761059222}
   DeadStatus: {fileID: 26063027139256903}
+  BounceCountText: {fileID: 2642182689596768916}
 --- !u!114 &1400619543934485679
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -509,11 +507,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e565ad239448a064288b44c80a70827f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  MinAngle: 10
+  MaxAngle: 170
   DotLinePrefab: {fileID: 7255772237149820198, guid: 2998b361669861544bc517d68378a933, type: 3}
   DotLineContainer: {fileID: 6073516618085103496}
   DotLineCount: 2
-  MinAngle: 10
-  MaxAngle: 170
   SnakeHeadVisualPrefab: {fileID: 3322178462078602615, guid: 01057a0a5638c46419b4f12c8f5d7616, type: 3}
 --- !u!1 &4592305899912632702
 GameObject:

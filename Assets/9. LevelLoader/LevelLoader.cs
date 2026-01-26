@@ -5,9 +5,7 @@ public class LevelLoader : MonoBehaviour
 {
     public static LevelLoader Instance;
 
-    [SerializeField] private string CurrentLevel;
-
-    private void Start()
+    private void Awake()
     {
         if (Instance != null)
         {
@@ -19,13 +17,26 @@ public class LevelLoader : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    public void LoadNextLevel()
+    private void Start()
     {
-        SceneManager.LoadScene("Gameplay");
+        SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
-    public string GetCurrentLevel()
+    private void OnDestroy()
     {
-        return CurrentLevel;
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
+    private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.buildIndex > 0)
+        {
+            GameManager.Instance.ResetLevel();
+        }
+    }
+
+    public void LoadNextLevel(string name)
+    {
+        SceneManager.LoadScene(name);
     }
 }

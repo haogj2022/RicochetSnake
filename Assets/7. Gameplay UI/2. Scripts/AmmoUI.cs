@@ -4,30 +4,40 @@ using UnityEngine.UI;
 
 public class AmmoUI : MonoBehaviour
 {
-    [SerializeField] private Image AmmoImage;
+    [SerializeField] private GameObject AmmoImagePrefab;
     [SerializeField] private GameObject AmmoContainer;
     private int AmmoCount;
     private List<Image> AmmoImageList = new();
 
-    private void Update()
+    private void Start()
     {
+        GameManager.Instance.OnSnakeShot += OnSnakeShot;
         AmmoCount = GameManager.Instance.GetAmmoCount();
 
-        if (AmmoImageList.Count < AmmoCount)
+        for (int i = 0; i < AmmoCount; i++)
         {
-            Image newAmmoImage = PoolingSystem.Spawn<Image>(
-                AmmoImage.gameObject,
-                AmmoContainer.transform,
-                Vector3.one,
-                Vector3.zero,
-                Quaternion.identity);
+            Image newAmmoImage = Instantiate(AmmoImagePrefab, AmmoContainer.transform).GetComponent<Image>();
             AmmoImageList.Add(newAmmoImage);
         }
+    }
 
-        if (AmmoImageList.Count > AmmoCount)
+    private void OnDestroy()
+    {
+        GameManager.Instance.OnSnakeShot -= OnSnakeShot;
+    }
+
+    private void OnSnakeShot()
+    {
+        AmmoCount = GameManager.Instance.GetAmmoCount();
+        DecreaseAmmoCount();
+    }
+
+    private void DecreaseAmmoCount()
+    {
+        if (AmmoImageList.Count > 0)
         {
-            PoolingSystem.Despawn(AmmoImage.gameObject, AmmoImageList[AmmoImageList.Count - 1].gameObject);
-            AmmoImageList.RemoveAt(AmmoImageList.Count - 1);
+            AmmoImageList[0].gameObject.SetActive(false);
+            AmmoImageList.RemoveAt(0);
         }
     }
 }

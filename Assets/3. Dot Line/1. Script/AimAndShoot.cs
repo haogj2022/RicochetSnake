@@ -45,7 +45,7 @@ public class AimAndShoot : MonoBehaviour
     [SerializeField] private float MaxAngle = 170f;
     private float CurrentAngle;
     private float BodyRadius;
-    private bool CanAim = true;
+    private bool CanAim;
     private bool CanShoot = true;
     private Vector2 StartPoint;
     private Vector2 EndPoint;
@@ -81,7 +81,7 @@ public class AimAndShoot : MonoBehaviour
         {
             DotLineContainer.SetActive(false);
             CanShoot = false;
-            GameManager.Instance.OnSnakeShot(transform.right);
+            GameManager.Instance.OnSnakeShot();
             GameManager.Instance.DecreaseAmmoCount();
         }
     }

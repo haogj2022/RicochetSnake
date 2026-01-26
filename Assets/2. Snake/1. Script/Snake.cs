@@ -7,8 +7,8 @@ public class Snake : MonoBehaviour
     #region MoveSnakeHead
     [SerializeField] private float MoveSpeed = 10f;
     private Vector2 MoveDirection;
-    private bool CanMove;
     private Rigidbody2D PlayerBody;
+    private bool CanMove;
 
     private void Start()
     {
@@ -18,7 +18,10 @@ public class Snake : MonoBehaviour
         SpawnNewParts();
         LastHeadPosition = transform.position;
         PlayerBody = GetComponent<Rigidbody2D>();
-        CurrentBounceCount = MaxBounceCount;
+
+        MaxBounce = GameManager.Instance.GetMaxBounce();
+        RecoveryRate = GameManager.Instance.GetRecoveryRate();
+        CurrentBounceCount = MaxBounce;
     }
 
     private void OnDestroy()
@@ -27,9 +30,9 @@ public class Snake : MonoBehaviour
         GameManager.Instance.OnLevelCompleted -= OnLevelCompleted;
     }
 
-    private void OnSnakeShot(Vector2 moveDirection)
+    private void OnSnakeShot()
     {
-        MoveDirection = moveDirection.normalized;
+        MoveDirection = transform.right;
         CanMove = true;
     }
 
@@ -94,10 +97,10 @@ public class Snake : MonoBehaviour
         {
             if (SnakeTails[0].position == SnakeTails[1].position)
             {
-                PoolingSystem.Despawn(SnakeTailPrefab.gameObject, SnakeTails[1].gameObject);
+                SnakeTails[1].gameObject.SetActive(false);
                 SnakeTails.RemoveAt(1);
 
-                PoolingSystem.Despawn(BodyPartPrefab.gameObject, BodyParts[1].gameObject);
+                BodyParts[1].gameObject.SetActive(false);
                 BodyParts.RemoveAt(1);
             }
         }
@@ -123,20 +126,10 @@ public class Snake : MonoBehaviour
 
     private void SpawnNewParts()
     {
-        Transform newTail = PoolingSystem.Spawn<Transform>(
-            SnakeTailPrefab.gameObject,
-            transform.parent,
-            transform.localScale,
-            transform.position,
-            Quaternion.identity);
+        Transform newTail = Instantiate(SnakeTailPrefab, transform.position, Quaternion.identity, transform.parent);
         SnakeTails.Add(newTail);
 
-        SnakeBody newBodyPart = PoolingSystem.Spawn<SnakeBody>(
-            BodyPartPrefab.gameObject,
-            transform.parent,
-            transform.localScale,
-            transform.position,
-            Quaternion.identity);
+        SnakeBody newBodyPart = Instantiate(BodyPartPrefab, transform.parent);
         BodyParts.Add(newBodyPart);
     }
 
@@ -144,12 +137,12 @@ public class Snake : MonoBehaviour
     {
         for (int i = 0; i < SnakeTails.Count; i++)
         {
-            PoolingSystem.Despawn(SnakeTailPrefab.gameObject, SnakeTails[i].gameObject);
+            SnakeTails[i].gameObject.SetActive(false);
         }
 
         for (int i = 0; i < BodyParts.Count; i++)
         {
-            PoolingSystem.Despawn(BodyPartPrefab.gameObject, BodyParts[i].gameObject);
+            BodyParts[i].gameObject.SetActive(false);
         }
 
         SnakeTails.Clear();
@@ -183,29 +176,26 @@ public class Snake : MonoBehaviour
         if (collision.gameObject.CompareTag("Finish"))
         {
             CanMove = false;
-            GameManager.Instance.OnMoveCompleted();
-
+            
             if (GameManager.Instance.GetAmmoCount() > 0)
             {
                 ResetBounceCount();
+                GameManager.Instance.OnMoveCompleted();
             }
             else
             {
-                DespawnSelf();
+                GameManager.Instance.OnLevelFailed();
             }
         }
 
-        if (collision.gameObject.CompareTag("Apple"))
+        if (collision.gameObject.CompareTag("Food"))
         {
-            collision.gameObject.SetActive(false);
             IncreaseBounceCount();
-            GameManager.Instance.DecreaseFoodAmount();
         }
     }
 
     private void DespawnSelf()
     {
-        CanMove = false;
         AliveStatus.SetActive(false);
         DeadStatus.SetActive(true);
         DespawnOldParts();
@@ -215,8 +205,8 @@ public class Snake : MonoBehaviour
 
     #region UpdateBounceCount
     [SerializeField] private TMP_Text BounceCountText;
-    [SerializeField] private int MaxBounceCount = 5;
-    [SerializeField] private float RecoverBounceCountPercentage = 10;
+    private int MaxBounce;
+    private float RecoveryRate;
     private int CurrentBounceCount;
     private int MinBounceCount = 3;
 
@@ -229,7 +219,7 @@ public class Snake : MonoBehaviour
     private void IncreaseBounceCount()
     {
         float randomValue = Random.value;
-        float recoverChance = RecoverBounceCountPercentage / 100;
+        float recoverChance = RecoveryRate / 100;
 
         if (recoverChance < randomValue)
         {
@@ -248,6 +238,7 @@ public class Snake : MonoBehaviour
             if (CurrentBounceCount <= 0)
             {
                 CurrentBounceCount = 0;
+                CanMove = false;
                 DespawnSelf();
             }
         }
@@ -255,7 +246,7 @@ public class Snake : MonoBehaviour
 
     private void ResetBounceCount()
     {
-        CurrentBounceCount = MaxBounceCount;
+        CurrentBounceCount = MaxBounce;
         BounceCountText.color = Color.white;
     }
     #endregion UpdateBounceCount

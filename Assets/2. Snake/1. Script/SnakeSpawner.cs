@@ -31,7 +31,8 @@ public class SnakeSpawner : MonoBehaviour
         }
         else
         {
-            Debug.Log("Level Failed");
+            Snakes.Clear();
+            GameManager.Instance.OnLevelFailed();
         }
     }
 
@@ -45,7 +46,7 @@ public class SnakeSpawner : MonoBehaviour
     {
         if (Snakes.Count > 0)
         {
-            Destroy(Snakes[0].gameObject);
+            Snakes[0].gameObject.SetActive(false);
             Snakes.RemoveAt(0);
         }
     }

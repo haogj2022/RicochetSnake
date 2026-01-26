@@ -19,7 +19,7 @@ public static class PlayerDataManager
         if (File.Exists(filePath) == false)
         {
             Debug.LogWarning($"Player data was not found. Create new player data");
-            SavePlayerData(new PlayerData());
+            return new PlayerData();
         }
 
         string fileData = File.ReadAllText(filePath);
@@ -37,4 +37,14 @@ public class PlayerData
     public float RecoveryRate;
     public float MagnetRange;
     public float FreeBounce;
+
+    public PlayerData()
+    {
+        CurrentLevel = 1;
+        TotalGold = 0;
+        MaxBounce = 5;
+        RecoveryRate = 10;
+        MagnetRange = 0;
+        FreeBounce = 0;
+    }
 }

@@ -1,18 +1,30 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class VictoryScreenUI : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private GameObject LevelCompletePanel;
+    [SerializeField] private Button ContinueButton;
+
+    private void Start()
     {
-        
+        GameManager.Instance.OnLevelCompleted += OnLevelCompleted;
+        ContinueButton.onClick.AddListener(LoadMainMenu);
     }
 
-    // Update is called once per frame
-    void Update()
+    private void OnDestroy()
     {
-        
+        GameManager.Instance.OnLevelCompleted -= OnLevelCompleted;
+        ContinueButton.onClick.RemoveListener(LoadMainMenu);
+    }
+
+    private void OnLevelCompleted()
+    {
+        LevelCompletePanel.SetActive(true);
+    }
+
+    private void LoadMainMenu()
+    {
+        LevelLoader.Instance.LoadNextLevel("MainMenu");
     }
 }

@@ -30,7 +30,7 @@ public static class PoolingSystem
         instance.transform.SetParent(parent);
         instance.transform.localScale = localScale;
         instance.transform.SetLocalPositionAndRotation(localPosition, localRotation);
-        return instance.GetComponent<T>();
+        return instance.GetComponentInChildren<T>();
     }
 
     public static void Despawn(GameObject prefab, GameObject instance)

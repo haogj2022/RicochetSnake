@@ -49,7 +49,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 30ac3b5c9dd109148816f7b84bd84e80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  AmmoImage: {fileID: 5935916736616073027, guid: ca8b365df8b38094e8a180bf5d4c67b7, type: 3}
+  AmmoImagePrefab: {fileID: 9034756153737165821, guid: ca8b365df8b38094e8a180bf5d4c67b7, type: 3}
   AmmoContainer: {fileID: 8355479493010186918}
 --- !u!1 &7085860720699118745
 GameObject:

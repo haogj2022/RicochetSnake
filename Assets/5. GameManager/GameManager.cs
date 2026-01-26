@@ -1,19 +1,20 @@
 using System;
-using System.Xml;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    public PlayerData Data;
     [SerializeField] private int MaxAmmoCount = 3;
-    public Action<Vector2> OnSnakeShot;
+    public Action OnSnakeShot;
+    public Action OnFoodEaten;
     public Action OnZeroBounceCount;
     public Action OnMoveCompleted;
     public Action OnLevelFailed;
     public Action OnLevelCompleted;
     private int CurrentAmmoCount;
     private int FoodAmount;
+    private int CurrentLevelGold;
+    private PlayerData Data;
 
     private void Awake()
     {
@@ -26,18 +27,23 @@ public class GameManager : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(gameObject);
         Data = PlayerDataManager.LoadPlayerData();
+
+        if (Data == null)
+        {
+            Data = new PlayerData();
+        }
     }
 
-    private void OnDestroy()
+    private void OnApplicationQuit()
     {
         PlayerDataManager.SavePlayerData(Data);
     }
 
-    private void Start()
+    public void ResetLevel()
     {
         CurrentAmmoCount = MaxAmmoCount;
-        FoodAmount = GameObject.FindGameObjectsWithTag("Apple").Length + 
-            GameObject.FindGameObjectsWithTag("Gold Apple").Length;
+        FoodAmount = GameObject.FindGameObjectsWithTag("Food").Length;
+        CurrentLevelGold = 0;
     }
 
     public void DecreaseAmmoCount()
@@ -53,12 +59,38 @@ public class GameManager : MonoBehaviour
         {
             FoodAmount = 0;
             OnLevelCompleted();
-            Debug.Log("Level Completed");
+            Data.CurrentLevel++;
         }
     }
 
     public int GetAmmoCount()
     {
         return CurrentAmmoCount;
+    }
+
+    public void IncreaseGold(int amount)
+    {
+        CurrentLevelGold += amount;
+        Data.TotalGold += amount;
+    }
+
+    public int GetMaxBounce()
+    {
+        return Data.MaxBounce;
+    }
+
+    public float GetRecoveryRate()
+    {
+        return Data.RecoveryRate;
+    }
+
+    public int GetCurrentLevel()
+    {
+        return Data.CurrentLevel;
+    }
+
+    public int GetTotalGold()
+    {
+        return Data.TotalGold;
     }
 }

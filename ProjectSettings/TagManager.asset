@@ -7,6 +7,7 @@ TagManager:
   - Obstacle
   - Apple
   - Gold Apple
+  - Food
   layers:
   - Default
   - TransparentFX

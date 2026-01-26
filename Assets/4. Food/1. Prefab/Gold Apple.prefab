@@ -60,12 +60,12 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 1
       objectReference: {fileID: 0}
-    - target: {fileID: 9119670046652596579, guid: b47cb1267207a804ea08a544eb35f700, type: 3}
-      propertyPath: m_Name
-      value: Gold Apple
+    - target: {fileID: 3468749103334974139, guid: b47cb1267207a804ea08a544eb35f700, type: 3}
+      propertyPath: GoldReward
+      value: 100
       objectReference: {fileID: 0}
     - target: {fileID: 9119670046652596579, guid: b47cb1267207a804ea08a544eb35f700, type: 3}
-      propertyPath: m_TagString
+      propertyPath: m_Name
       value: Gold Apple
       objectReference: {fileID: 0}
     m_RemovedComponents: []
