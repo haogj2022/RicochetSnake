@@ -43,4 +43,9 @@ public static class PoolingSystem
             instance.SetActive(false);
         }
     }
+
+    public static void Clear()
+    {
+        PoolDictionary.Clear();
+    }
 }

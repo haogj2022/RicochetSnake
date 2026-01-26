@@ -81,8 +81,8 @@ public class AimAndShoot : MonoBehaviour
         {
             DotLineContainer.SetActive(false);
             CanShoot = false;
-            GameManager.Instance.OnSnakeShot();
             GameManager.Instance.DecreaseAmmoCount();
+            GameManager.Instance.OnSnakeShot();
         }
     }
 

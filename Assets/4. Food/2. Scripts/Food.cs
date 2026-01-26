@@ -8,10 +8,14 @@ public class Food : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            GameManager.Instance.IncreaseGold(GoldReward);
             GameManager.Instance.DecreaseFoodAmount();
             GameManager.Instance.OnFoodEaten();
             gameObject.SetActive(false);
         }
+    }
+
+    public int GetGoldReward()
+    {
+        return GoldReward;
     }
 }

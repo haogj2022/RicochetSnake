@@ -4,16 +4,25 @@ using UnityEngine;
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
-    [SerializeField] private int MaxAmmoCount = 3;
+
     public Action OnSnakeShot;
     public Action OnFoodEaten;
     public Action OnZeroBounceCount;
     public Action OnMoveCompleted;
     public Action OnLevelFailed;
     public Action OnLevelCompleted;
+    public Action OnLevelPaused;
+    public Action OnLevelUnpaused;
+    public Action OnAmmoPurchased;
+    public Action OnGoldDoubled;
+
+    private int MaxAmmoCount = 3;
     private int CurrentAmmoCount;
     private int FoodAmount;
-    private int CurrentLevelGold;
+    private int BuyAmmoCount = 3;
+    private int BuyAmmoStartCost = 50;
+    private int BuyAmmoCurrentCost;
+
     private PlayerData Data;
 
     private void Awake()
@@ -32,6 +41,7 @@ public class GameManager : MonoBehaviour
         {
             Data = new PlayerData();
         }
+        ResetLevel();
     }
 
     private void OnApplicationQuit()
@@ -42,8 +52,24 @@ public class GameManager : MonoBehaviour
     public void ResetLevel()
     {
         CurrentAmmoCount = MaxAmmoCount;
+        BuyAmmoCurrentCost = BuyAmmoStartCost;
         FoodAmount = GameObject.FindGameObjectsWithTag("Food").Length;
-        CurrentLevelGold = 0;
+    }
+
+    public void BuyAmmo()
+    {
+        if (Data.TotalGold >= BuyAmmoCurrentCost)
+        {
+            Data.TotalGold -= BuyAmmoCurrentCost;
+            CurrentAmmoCount += BuyAmmoCount;
+            BuyAmmoCurrentCost *= 2;
+            OnAmmoPurchased();
+        }
+    }
+
+    public int GetBuyAmmoCurrentCost()
+    {
+        return BuyAmmoCurrentCost;
     }
 
     public void DecreaseAmmoCount()
@@ -70,7 +96,6 @@ public class GameManager : MonoBehaviour
 
     public void IncreaseGold(int amount)
     {
-        CurrentLevelGold += amount;
         Data.TotalGold += amount;
     }
 

@@ -11,12 +11,14 @@ public class SnakeSpawner : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.OnZeroBounceCount += OnZeroBounceCount;
+        GameManager.Instance.OnAmmoPurchased += OnAmmoPurchased;
         SpawnNewPlayer();
     }
 
     private void OnDestroy()
     {
         GameManager.Instance.OnZeroBounceCount -= OnZeroBounceCount;
+        GameManager.Instance.OnAmmoPurchased -= OnAmmoPurchased;
     }
 
     private void OnZeroBounceCount()
@@ -31,14 +33,23 @@ public class SnakeSpawner : MonoBehaviour
         }
         else
         {
-            Snakes.Clear();
             GameManager.Instance.OnLevelFailed();
         }
     }
 
+    private void OnAmmoPurchased()
+    {
+        SpawnNewPlayer();
+    }
+
     private void SpawnNewPlayer()
     {
-        Snake newSnake = Instantiate(PlayerPrefab, PlayerSpawn, Quaternion.identity, transform);
+        Snake newSnake = PoolingSystem.Spawn<Snake>(
+            PlayerPrefab.gameObject,
+            transform,
+            PlayerPrefab.transform.localScale,
+            PlayerSpawn,
+            Quaternion.identity);
         Snakes.Add(newSnake);
     }
 
@@ -46,7 +57,7 @@ public class SnakeSpawner : MonoBehaviour
     {
         if (Snakes.Count > 0)
         {
-            Snakes[0].gameObject.SetActive(false);
+            PoolingSystem.Despawn(PlayerPrefab.gameObject, Snakes[0].gameObject);
             Snakes.RemoveAt(0);
         }
     }

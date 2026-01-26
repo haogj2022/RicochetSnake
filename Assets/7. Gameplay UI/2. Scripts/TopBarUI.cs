@@ -10,7 +10,13 @@ public class TopBarUI : MonoBehaviour
 
     private void Start()
     {
-        GameManager.Instance.OnFoodEaten += OnFoodEaten;
+        GameManager.Instance.OnFoodEaten += UpdateTotalGold;
+        GameManager.Instance.OnLevelUnpaused += EnablePauseButton;
+        GameManager.Instance.OnLevelCompleted += DisablePauseButton;
+        GameManager.Instance.OnLevelFailed += DisablePauseButton;
+        GameManager.Instance.OnAmmoPurchased += UpdateTotalGold;
+        GameManager.Instance.OnGoldDoubled += UpdateTotalGold;
+
         PauseButton.onClick.AddListener(PauseLevel);
         CurrentLevelText.text = GameManager.Instance.GetCurrentLevel().ToString();
         TotalGoldText.text = GameManager.Instance.GetTotalGold().ToString();
@@ -18,17 +24,34 @@ public class TopBarUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        GameManager.Instance.OnFoodEaten -= OnFoodEaten;
+        GameManager.Instance.OnFoodEaten -= UpdateTotalGold;
+        GameManager.Instance.OnLevelUnpaused -= EnablePauseButton;
+        GameManager.Instance.OnLevelCompleted -= DisablePauseButton;
+        GameManager.Instance.OnLevelFailed -= DisablePauseButton;
+        GameManager.Instance.OnAmmoPurchased -= UpdateTotalGold;
+        GameManager.Instance.OnGoldDoubled -= UpdateTotalGold;
+
         PauseButton.onClick.RemoveListener(PauseLevel);
+    }
+
+    private void DisablePauseButton()
+    {
+        PauseButton.interactable = false;
+    }
+
+    private void UpdateTotalGold()
+    {
+        TotalGoldText.text = GameManager.Instance.GetTotalGold().ToString();
     }
 
     private void PauseLevel()
     {
-        Time.timeScale = 0;
+        GameManager.Instance.OnLevelPaused();
+        PauseButton.interactable = false;
     }
 
-    private void OnFoodEaten()
+    private void EnablePauseButton()
     {
-        TotalGoldText.text = GameManager.Instance.GetTotalGold().ToString();
+        PauseButton.interactable = true;
     }
 }

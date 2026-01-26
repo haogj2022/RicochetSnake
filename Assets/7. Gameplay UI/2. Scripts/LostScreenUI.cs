@@ -1,29 +1,39 @@
+using DG.Tweening;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class LostScreenUI : MonoBehaviour
 {
     [SerializeField] private GameObject NoAmmoLeftPanel;
-    [SerializeField] private Button RestartLevel;
+    [SerializeField] private Button BuyAmmoButton;
+    [SerializeField] private TMP_Text BuyAmmoText;
     [SerializeField] private Button ReturnToMainMenu;
 
     private void Start()
     {
         GameManager.Instance.OnLevelFailed += OnLevelFailed;
+        BuyAmmoButton.onClick.AddListener(BuyAmmo);
         ReturnToMainMenu.onClick.AddListener(LoadMainMenu);
-        RestartLevel.onClick.AddListener(ReloadLevel);
     }
 
     private void OnDestroy()
     {
         GameManager.Instance.OnLevelFailed -= OnLevelFailed;
+        BuyAmmoButton.onClick.RemoveListener(BuyAmmo);
         ReturnToMainMenu.onClick.RemoveListener(LoadMainMenu);
-        RestartLevel.onClick.RemoveListener(ReloadLevel);
     }
 
     private void OnLevelFailed()
     {
-        NoAmmoLeftPanel.SetActive(true);
+        NoAmmoLeftPanel.transform.DOScale(1, 0.5f).SetEase(Ease.OutBounce);
+        BuyAmmoText.text = $"Buy 3 Ammo for {GameManager.Instance.GetBuyAmmoCurrentCost()}";
+
+        if (GameManager.Instance.GetTotalGold() < GameManager.Instance.GetBuyAmmoCurrentCost())
+        {
+            BuyAmmoButton.interactable = false;
+            BuyAmmoText.color = Color.red;
+        }
     }
 
     private void LoadMainMenu()
@@ -31,8 +41,9 @@ public class LostScreenUI : MonoBehaviour
         LevelLoader.Instance.LoadNextLevel("MainMenu");
     }
 
-    private void ReloadLevel()
+    private void BuyAmmo()
     {
-        LevelLoader.Instance.LoadNextLevel("Gameplay");
+        GameManager.Instance.BuyAmmo();
+        NoAmmoLeftPanel.transform.DOScale(0, 0.5f).SetEase(Ease.OutBounce);
     }
 }

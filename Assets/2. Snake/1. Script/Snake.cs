@@ -14,25 +14,56 @@ public class Snake : MonoBehaviour
     {
         GameManager.Instance.OnSnakeShot += OnSnakeShot;
         GameManager.Instance.OnLevelCompleted += OnLevelCompleted;
+        GameManager.Instance.OnLevelPaused += OnLevelPaused;
+        GameManager.Instance.OnLevelUnpaused += OnLevelUnpaused;
 
-        SpawnNewParts();
-        LastHeadPosition = transform.position;
         PlayerBody = GetComponent<Rigidbody2D>();
+        ResetSnake();
+    }
 
+    private void OnEnable()
+    {
+        if (DeadStatus.activeSelf)
+        {
+            ResetSnake();
+            GameManager.Instance.OnMoveCompleted();
+        }
+    }
+
+    private void ResetSnake()
+    {
+        CanMove = false;
+        AliveStatus.SetActive(true);
+        DeadStatus.SetActive(false);
+        SpawnNewParts();
         MaxBounce = GameManager.Instance.GetMaxBounce();
         RecoveryRate = GameManager.Instance.GetRecoveryRate();
         CurrentBounceCount = MaxBounce;
+        BounceCountText.color = Color.white;
     }
 
     private void OnDestroy()
     {
         GameManager.Instance.OnSnakeShot -= OnSnakeShot;
         GameManager.Instance.OnLevelCompleted -= OnLevelCompleted;
+        GameManager.Instance.OnLevelPaused -= OnLevelPaused;
+        GameManager.Instance.OnLevelUnpaused -= OnLevelUnpaused;
+        PoolingSystem.Clear();
     }
 
     private void OnSnakeShot()
     {
         MoveDirection = transform.right;
+        CanMove = true;
+    }
+
+    private void OnLevelPaused()
+    {
+        CanMove = false;
+    }
+
+    private void OnLevelUnpaused()
+    {
         CanMove = true;
     }
 
@@ -62,6 +93,7 @@ public class Snake : MonoBehaviour
     private List<SnakeBody> BodyParts = new();
     private List<Vector2> HeadPositions = new();
     private Vector2 LastHeadPosition;
+
     private void Update()
     {
         UpdateBounceCountText();
@@ -97,10 +129,10 @@ public class Snake : MonoBehaviour
         {
             if (SnakeTails[0].position == SnakeTails[1].position)
             {
-                SnakeTails[1].gameObject.SetActive(false);
+                PoolingSystem.Despawn(SnakeTailPrefab.gameObject, SnakeTails[1].gameObject);
                 SnakeTails.RemoveAt(1);
 
-                BodyParts[1].gameObject.SetActive(false);
+                PoolingSystem.Despawn(BodyPartPrefab.gameObject, BodyParts[1].gameObject);
                 BodyParts.RemoveAt(1);
             }
         }
@@ -108,7 +140,7 @@ public class Snake : MonoBehaviour
 
     private void UpdateBodyParts()
     {
-        if (BodyParts.Count > 0 && BodyParts.Count < 2)
+        if (BodyParts.Count == 1)
         {
             BodyParts[0].SetPosition(SnakeTails[0].position, transform.position);
         }
@@ -126,10 +158,20 @@ public class Snake : MonoBehaviour
 
     private void SpawnNewParts()
     {
-        Transform newTail = Instantiate(SnakeTailPrefab, transform.position, Quaternion.identity, transform.parent);
+        Transform newTail = PoolingSystem.Spawn<Transform>(
+            SnakeTailPrefab.gameObject,
+            transform.parent,
+            SnakeTailPrefab.transform.localScale,
+            transform.position,
+            Quaternion.identity);
         SnakeTails.Add(newTail);
 
-        SnakeBody newBodyPart = Instantiate(BodyPartPrefab, transform.parent);
+        SnakeBody newBodyPart = PoolingSystem.Spawn<SnakeBody>(
+            BodyPartPrefab.gameObject,
+            transform.parent,
+            BodyPartPrefab.transform.localScale,
+            transform.position,
+            Quaternion.identity);
         BodyParts.Add(newBodyPart);
     }
 
@@ -137,12 +179,12 @@ public class Snake : MonoBehaviour
     {
         for (int i = 0; i < SnakeTails.Count; i++)
         {
-            SnakeTails[i].gameObject.SetActive(false);
+            PoolingSystem.Despawn(SnakeTailPrefab.gameObject, SnakeTails[i].gameObject);
         }
 
         for (int i = 0; i < BodyParts.Count; i++)
         {
-            BodyParts[i].gameObject.SetActive(false);
+            PoolingSystem.Despawn(BodyPartPrefab.gameObject, BodyParts[i].gameObject);
         }
 
         SnakeTails.Clear();
@@ -176,15 +218,15 @@ public class Snake : MonoBehaviour
         if (collision.gameObject.CompareTag("Finish"))
         {
             CanMove = false;
-            
+            ResetBounceCount();
+
             if (GameManager.Instance.GetAmmoCount() > 0)
             {
-                ResetBounceCount();
                 GameManager.Instance.OnMoveCompleted();
             }
             else
             {
-                GameManager.Instance.OnLevelFailed();
+                DespawnSelf();
             }
         }
 
@@ -209,6 +251,11 @@ public class Snake : MonoBehaviour
     private float RecoveryRate;
     private int CurrentBounceCount;
     private int MinBounceCount = 3;
+
+    public int GetCurrentBounceCount()
+    {
+        return CurrentBounceCount;
+    }
 
     private void UpdateBounceCountText()
     {
