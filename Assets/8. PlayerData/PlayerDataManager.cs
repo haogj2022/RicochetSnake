@@ -43,7 +43,7 @@ public class PlayerData
         CurrentLevel = 1;
         TotalGold = 0;
         MaxBounce = 5;
-        RecoveryRate = 10;
+        RecoveryRate = 0;
         MagnetRange = 0;
         FreeBounce = 0;
     }

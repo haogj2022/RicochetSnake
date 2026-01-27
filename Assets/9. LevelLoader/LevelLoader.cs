@@ -38,5 +38,6 @@ public class LevelLoader : MonoBehaviour
     public void LoadNextLevel(string name)
     {
         SceneManager.LoadScene(name);
+        PoolingSystem.Clear();
     }
 }

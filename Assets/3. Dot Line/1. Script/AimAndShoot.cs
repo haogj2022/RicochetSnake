@@ -46,7 +46,7 @@ public class AimAndShoot : MonoBehaviour
     private float CurrentAngle;
     private float BodyRadius;
     private bool CanAim;
-    private bool CanShoot = true;
+    private bool CanShoot;
     private Vector2 StartPoint;
     private Vector2 EndPoint;
     private Vector2 AimDirection;
@@ -67,13 +67,14 @@ public class AimAndShoot : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButton(0) && CanAim && CanShoot)
+        if (Input.GetMouseButton(0) && CanAim)
         {
             StartAiming();
 
             if (CurrentAngle > MinAngle && CurrentAngle < MaxAngle)
             {
                 ShowDotLine();
+                CanShoot = true;
             }
         }
 

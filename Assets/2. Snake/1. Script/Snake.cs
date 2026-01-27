@@ -30,6 +30,11 @@ public class Snake : MonoBehaviour
         }
     }
 
+    private void OnDisable()
+    {
+        DespawnOldParts();
+    }
+
     private void ResetSnake()
     {
         CanMove = false;
@@ -48,7 +53,6 @@ public class Snake : MonoBehaviour
         GameManager.Instance.OnLevelCompleted -= OnLevelCompleted;
         GameManager.Instance.OnLevelPaused -= OnLevelPaused;
         GameManager.Instance.OnLevelUnpaused -= OnLevelUnpaused;
-        PoolingSystem.Clear();
     }
 
     private void OnSnakeShot()
@@ -204,7 +208,6 @@ public class Snake : MonoBehaviour
 
         if (collision.gameObject.CompareTag("Obstacle"))
         {
-            DecreaseBounceCount(1);
             Vector2 normal = collision.contacts[0].normal;
             MoveDirection = Vector2.Reflect(MoveDirection, normal);
             float angle = Mathf.Atan2(MoveDirection.y, MoveDirection.x) * Mathf.Rad2Deg;
@@ -240,7 +243,6 @@ public class Snake : MonoBehaviour
     {
         AliveStatus.SetActive(false);
         DeadStatus.SetActive(true);
-        DespawnOldParts();
         GameManager.Instance.OnZeroBounceCount();
     }
     #endregion HandleCollision
@@ -274,7 +276,7 @@ public class Snake : MonoBehaviour
         }
     }
 
-    private void DecreaseBounceCount(int amount)
+    public void DecreaseBounceCount(int amount)
     {
         CurrentBounceCount -= amount;
 
