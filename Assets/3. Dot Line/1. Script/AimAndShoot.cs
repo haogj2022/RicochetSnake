@@ -7,6 +7,8 @@ public class AimAndShoot : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.OnMoveCompleted += OnMoveCompleted;
+        GameManager.Instance.OnLevelPaused += DisableTouch;
+        GameManager.Instance.OnLevelUnpaused += EnableTouch;
 
         for (int i = 0; i < DotLineCount; i++)
         {
@@ -25,19 +27,41 @@ public class AimAndShoot : MonoBehaviour
     private void OnDestroy()
     {
         GameManager.Instance.OnMoveCompleted -= OnMoveCompleted;
+        GameManager.Instance.OnLevelPaused -= DisableTouch;
+        GameManager.Instance.OnLevelUnpaused -= EnableTouch;
     }
 
+    private void OnEnable()
+    {
+        EnableTouch();
+    }
+
+    private void OnDisable()
+    {
+        DisableTouch();
+    }
+
+    private void DisableTouch()
+    {
+        CanTouch = false;
+    }
+
+    private void EnableTouch()
+    {
+        CanTouch = true;
+    }
     private void OnMoveCompleted()
     {
         if (GameManager.Instance.GetAmmoCount() > 0)
         {
-            CanShoot = true;
+            CanTouch = true;
         }
         else
         {
-            CanShoot = false;
+            CanTouch = false;
         }
     }
+
     #endregion SetUpVisuals
 
     #region HandleMouseEvent
@@ -45,6 +69,7 @@ public class AimAndShoot : MonoBehaviour
     [SerializeField] private float MaxAngle = 170f;
     private float CurrentAngle;
     private float BodyRadius;
+    private bool CanTouch;
     private bool CanAim;
     private bool CanShoot;
     private Vector2 StartPoint;
@@ -55,7 +80,7 @@ public class AimAndShoot : MonoBehaviour
     {
         Vector2 mousePos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonDown(0) && CanTouch)
         {
             if (Vector3.Distance(mousePos, transform.position) < BodyRadius)
             {
@@ -67,7 +92,7 @@ public class AimAndShoot : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButton(0) && CanAim)
+        if (Input.GetMouseButton(0) && CanTouch && CanAim)
         {
             StartAiming();
 
@@ -78,9 +103,11 @@ public class AimAndShoot : MonoBehaviour
             }
         }
 
-        if (Input.GetMouseButtonUp(0) && CanAim && CanShoot)
+        if (Input.GetMouseButtonUp(0) && CanTouch && CanAim && CanShoot)
         {
             DotLineContainer.SetActive(false);
+            CanTouch = false;
+            CanAim = false;
             CanShoot = false;
             GameManager.Instance.DecreaseAmmoCount();
             GameManager.Instance.OnSnakeShot();

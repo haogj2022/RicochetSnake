@@ -13,21 +13,12 @@ public class Snake : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.OnSnakeShot += OnSnakeShot;
-        GameManager.Instance.OnLevelCompleted += OnLevelCompleted;
-        GameManager.Instance.OnLevelPaused += OnLevelPaused;
-        GameManager.Instance.OnLevelUnpaused += OnLevelUnpaused;
+        GameManager.Instance.OnLevelCompleted += DisableMovement;
+        GameManager.Instance.OnLevelPaused += DisableMovement;
+        GameManager.Instance.OnLevelUnpaused += EnableMovement;
 
         PlayerBody = GetComponent<Rigidbody2D>();
         ResetSnake();
-    }
-
-    private void OnEnable()
-    {
-        if (DeadStatus.activeSelf)
-        {
-            ResetSnake();
-            GameManager.Instance.OnMoveCompleted();
-        }
     }
 
     private void OnDisable()
@@ -50,9 +41,9 @@ public class Snake : MonoBehaviour
     private void OnDestroy()
     {
         GameManager.Instance.OnSnakeShot -= OnSnakeShot;
-        GameManager.Instance.OnLevelCompleted -= OnLevelCompleted;
-        GameManager.Instance.OnLevelPaused -= OnLevelPaused;
-        GameManager.Instance.OnLevelUnpaused -= OnLevelUnpaused;
+        GameManager.Instance.OnLevelCompleted -= DisableMovement;
+        GameManager.Instance.OnLevelPaused -= DisableMovement;
+        GameManager.Instance.OnLevelUnpaused -= EnableMovement;
     }
 
     private void OnSnakeShot()
@@ -61,19 +52,14 @@ public class Snake : MonoBehaviour
         CanMove = true;
     }
 
-    private void OnLevelPaused()
+    private void DisableMovement()
     {
         CanMove = false;
     }
 
-    private void OnLevelUnpaused()
+    private void EnableMovement()
     {
         CanMove = true;
-    }
-
-    private void OnLevelCompleted()
-    {
-        CanMove = false;
     }
 
     private void FixedUpdate()

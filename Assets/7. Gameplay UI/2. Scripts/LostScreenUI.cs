@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class LostScreenUI : MonoBehaviour
 {
     [SerializeField] private GameObject NoAmmoLeftPanel;
+    [SerializeField] private GameObject BlurPanel;
     [SerializeField] private Button BuyAmmoButton;
     [SerializeField] private TMP_Text BuyAmmoText;
     [SerializeField] private Button ReturnToMainMenu;
@@ -26,6 +27,7 @@ public class LostScreenUI : MonoBehaviour
 
     private void OnLevelFailed()
     {
+        BlurPanel.SetActive(true);
         NoAmmoLeftPanel.transform.DOScale(1, 0.5f).SetEase(Ease.OutBounce);
         BuyAmmoText.text = $"Buy 3 Ammo for {GameManager.Instance.GetBuyAmmoCurrentCost()}";
 
@@ -44,6 +46,7 @@ public class LostScreenUI : MonoBehaviour
     private void BuyAmmo()
     {
         GameManager.Instance.BuyAmmo();
+        BlurPanel.SetActive(false);
         NoAmmoLeftPanel.transform.DOScale(0, 0.5f).SetEase(Ease.OutBounce);
     }
 }

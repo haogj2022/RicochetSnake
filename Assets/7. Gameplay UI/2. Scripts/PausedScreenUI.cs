@@ -5,6 +5,7 @@ using UnityEngine.UI;
 public class PausedScreenUI : MonoBehaviour
 {
     [SerializeField] private GameObject PausedPanel;
+    [SerializeField] private GameObject BlurPanel;
     [SerializeField] private Button ContinueLevel;
     [SerializeField] private Button ReturnToMainMenu;
 
@@ -24,11 +25,13 @@ public class PausedScreenUI : MonoBehaviour
 
     private void OnLevelPaused()
     {
+        BlurPanel.SetActive(true);
         PausedPanel.transform.DOScale(1, 0.5f).SetEase(Ease.OutBounce);
     }
 
     private void UnpauseLevel()
     {
+        BlurPanel.SetActive(false);
         PausedPanel.transform.DOScale(0, 0.5f).SetEase(Ease.InBounce);
         GameManager.Instance.OnLevelUnpaused();
     }

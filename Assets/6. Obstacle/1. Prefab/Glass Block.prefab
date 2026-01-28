@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1211324611977023714}
   - component: {fileID: 1084483114380085974}
   - component: {fileID: 8545121395778560055}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Triangle (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -146,7 +146,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.1
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
@@ -173,7 +173,7 @@ GameObject:
   - component: {fileID: 3684995297186683402}
   - component: {fileID: 1048154535328832299}
   - component: {fileID: 4338374434468073871}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Triangle (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -307,7 +307,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.1
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
@@ -334,7 +334,7 @@ GameObject:
   - component: {fileID: 3930921530533812172}
   - component: {fileID: 4133246739345188372}
   - component: {fileID: 3105124496699118850}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Triangle (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -468,7 +468,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.1
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
@@ -495,7 +495,7 @@ GameObject:
   - component: {fileID: 8959202609868188033}
   - component: {fileID: 7047105963340878694}
   - component: {fileID: 978294795340611967}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Triangle (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -629,7 +629,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.1
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
@@ -656,7 +656,7 @@ GameObject:
   - component: {fileID: 399083427309527149}
   - component: {fileID: 7443614329067958082}
   - component: {fileID: 901697623820801785}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Triangle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -790,7 +790,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.1
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
@@ -817,7 +817,7 @@ GameObject:
   - component: {fileID: 7257403016003817819}
   - component: {fileID: 1074026741428436286}
   - component: {fileID: 5010401966719393885}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Triangle (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -951,7 +951,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.1
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
@@ -978,7 +978,7 @@ GameObject:
   - component: {fileID: 5369373503879303544}
   - component: {fileID: 8270150440714289398}
   - component: {fileID: 4160239464686142936}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Triangle (6)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1112,7 +1112,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.1
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0
@@ -1139,7 +1139,7 @@ GameObject:
   - component: {fileID: 2554215967236853288}
   - component: {fileID: 6782862124279403602}
   - component: {fileID: 195837004192811553}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Triangle (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1273,7 +1273,7 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 0.1
+  m_Mass: 1
   m_LinearDrag: 0
   m_AngularDrag: 0
   m_GravityScale: 0

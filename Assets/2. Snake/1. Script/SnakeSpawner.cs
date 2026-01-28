@@ -44,12 +44,7 @@ public class SnakeSpawner : MonoBehaviour
 
     private void SpawnNewPlayer()
     {
-        Snake newSnake = PoolingSystem.Spawn<Snake>(
-            PlayerPrefab.gameObject,
-            transform,
-            PlayerPrefab.transform.localScale,
-            PlayerSpawn,
-            Quaternion.identity);
+        Snake newSnake = Instantiate(PlayerPrefab, PlayerSpawn, Quaternion.identity, transform);
         Snakes.Add(newSnake);
     }
 
@@ -57,7 +52,7 @@ public class SnakeSpawner : MonoBehaviour
     {
         if (Snakes.Count > 0)
         {
-            PoolingSystem.Despawn(PlayerPrefab.gameObject, Snakes[0].gameObject);
+            Snakes[0].gameObject.SetActive(false);
             Snakes.RemoveAt(0);
         }
     }

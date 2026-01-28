@@ -8,10 +8,17 @@ public class Obstacle : MonoBehaviour
     [SerializeField] private bool IsFragile;
     [SerializeField] private List<GameObject> BrokenShards = new();
     [SerializeField] private bool IsBouncy;
-    private int MaxFragileCount = 1;
-    private int CurrentFragileCount;
     private BoxCollider2D SelfCollider;
     private SpriteRenderer SelfRenderer;
+
+    private void Start()
+    {
+        if (IsFragile)
+        {
+            SelfCollider = GetComponent<BoxCollider2D>();
+            SelfRenderer = GetComponent<SpriteRenderer>();
+        }
+    }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
@@ -19,26 +26,16 @@ public class Obstacle : MonoBehaviour
         {
             if (IsFragile)
             {
-                if (CurrentFragileCount < MaxFragileCount)
+                BounceCost = 0;
+                SelfRenderer.enabled = false;
+                SelfCollider.enabled = false;
+
+                for (int i = 0; i < BrokenShards.Count; i++)
                 {
-                    CurrentFragileCount++;
-                    SelfCollider = GetComponent<BoxCollider2D>();
-                    SelfRenderer = GetComponent<SpriteRenderer>();
-                    gameObject.tag = "Untagged";
-                    gameObject.layer = 2;
-                    BounceCost = 0;
+                    BrokenShards[i].SetActive(true);
                 }
-                else
-                {
-                    for (int i = 0; i < BrokenShards.Count; i++)
-                    {
-                        BrokenShards[i].SetActive(true);
-                    }
-                    SelfRenderer.enabled = false;
-                    SelfCollider.enabled = false;
-                    Invoke(nameof(DespawnBrokenShards), 1);
-                    return;
-                }
+
+                Invoke(nameof(DespawnBrokenShards), 5);
             }
 
             if (IsBouncy)

@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class VictoryScreenUI : MonoBehaviour
 {
     [SerializeField] private GameObject LevelCompletePanel;
+    [SerializeField] private GameObject BlurPanel;
     [SerializeField] private Button DoubleGoldButton;
     [SerializeField] private Button ContinueButton;
     [SerializeField] private TMP_Text AppleRewardText;
@@ -53,6 +54,7 @@ public class VictoryScreenUI : MonoBehaviour
     private void OnLevelCompleted()
     {
         SetStats();
+        BlurPanel.SetActive(true);
         LevelCompletePanel.transform.DOScale(1, 0.5f).SetEase(Ease.OutBounce);
     }
 

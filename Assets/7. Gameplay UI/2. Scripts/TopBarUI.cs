@@ -11,9 +11,6 @@ public class TopBarUI : MonoBehaviour
     private void Start()
     {
         GameManager.Instance.OnFoodEaten += UpdateTotalGold;
-        GameManager.Instance.OnLevelUnpaused += EnablePauseButton;
-        GameManager.Instance.OnLevelCompleted += DisablePauseButton;
-        GameManager.Instance.OnLevelFailed += DisablePauseButton;
         GameManager.Instance.OnAmmoPurchased += UpdateTotalGold;
         GameManager.Instance.OnGoldDoubled += UpdateTotalGold;
 
@@ -25,18 +22,10 @@ public class TopBarUI : MonoBehaviour
     private void OnDestroy()
     {
         GameManager.Instance.OnFoodEaten -= UpdateTotalGold;
-        GameManager.Instance.OnLevelUnpaused -= EnablePauseButton;
-        GameManager.Instance.OnLevelCompleted -= DisablePauseButton;
-        GameManager.Instance.OnLevelFailed -= DisablePauseButton;
         GameManager.Instance.OnAmmoPurchased -= UpdateTotalGold;
         GameManager.Instance.OnGoldDoubled -= UpdateTotalGold;
 
         PauseButton.onClick.RemoveListener(PauseLevel);
-    }
-
-    private void DisablePauseButton()
-    {
-        PauseButton.interactable = false;
     }
 
     private void UpdateTotalGold()
@@ -47,11 +36,5 @@ public class TopBarUI : MonoBehaviour
     private void PauseLevel()
     {
         GameManager.Instance.OnLevelPaused();
-        PauseButton.interactable = false;
-    }
-
-    private void EnablePauseButton()
-    {
-        PauseButton.interactable = true;
     }
 }
