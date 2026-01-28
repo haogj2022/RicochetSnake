@@ -13,7 +13,7 @@ public class MainMenuUI : MonoBehaviour
 
         if (CurrentLevelText != null)
         {
-            CurrentLevelText.text = $"Current Level: " + GameManager.Instance.GetCurrentLevel().ToString();
+            CurrentLevelText.text = GameManager.Instance.GetCurrentLevel().ToString();
         }
     }
 

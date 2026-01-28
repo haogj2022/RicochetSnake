@@ -75,6 +75,8 @@ public class AimAndShoot : MonoBehaviour
     private Vector2 StartPoint;
     private Vector2 EndPoint;
     private Vector2 AimDirection;
+    private float BoardWidth = 2.095f;
+    private float BoardHeight = 2.68f;
 
     private void Update()
     {
@@ -82,7 +84,8 @@ public class AimAndShoot : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) && CanTouch)
         {
-            if (Vector3.Distance(mousePos, transform.position) < BodyRadius)
+            if (mousePos.x > -BoardWidth && mousePos.x < BoardWidth &&
+                mousePos.y > -BoardHeight && mousePos.y < BoardHeight)
             {
                 CanAim = true;
             }
@@ -118,7 +121,7 @@ public class AimAndShoot : MonoBehaviour
     {
         StartPoint = transform.position;
         EndPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        AimDirection = StartPoint - EndPoint;
+        AimDirection = EndPoint - StartPoint;
         CurrentAngle = Mathf.Atan2(AimDirection.y, AimDirection.x) * Mathf.Rad2Deg;
 
         if (CurrentAngle > MinAngle && CurrentAngle < MaxAngle)
